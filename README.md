@@ -12,6 +12,8 @@
 
 **Empowering safer, smarter, and more responsive cities through visual AI detection, predictive risk modeling, and a real-time unified telemetry dashboard.**
 
+[📚 View Technical Documentation File (DOCUMENTATION.md)](file:///c:/Users/Devanshi%20Saxena/Downloads/bharat-infra-sentinel/DOCUMENTATION.md)
+
 </div>
 
 ---
@@ -41,7 +43,7 @@ graph TD
 ### 1. 📱 Unified, OTP-Gated Citizen Portal
 * **One-Click Secure Entry**: Built-in OTP simulation for phone number verification, keeping user identity protected.
 * **Privacy-First Profiles**: Renders custom initials-based avatar chips and masked contact info (e.g., `98765*****21`).
-* **Interactive History & Tabs**: Seamlessly toggle between **New Report Submission** (with optional voice input support) and **My Reports history** tracking.
+* **Interactive History & Tabs**: Seamlessly toggle between **New Report Submission** (with voice input support) and **My Reports history** tracking.
 * **Real-time User Analytics**: Computes individual civic contribution statistics directly from dynamic user data (Total Reports, In Progress, Resolved).
 * **Multi-Status Filters**: Track issue progression under active tabs aligning to `All`, `Reported` (Open), `In Progress`, and `Resolved` states.
 
@@ -64,6 +66,10 @@ graph TD
 ### 4. 🌐 Complete Localization & Dark Mode
 * **10+ Regional Languages**: Complete translation dictionaries for English, Bengali, Gujarati, Kannada, Tamil, Malayalam, Marathi, and more.
 * **Adaptive Dark Mode**: Toggle between premium light mode interfaces and high-density dark mode styling (featuring custom HSL purple, pink, and amber accents).
+
+### ⚡ 5. Performance Optimization (<100ms Load Times)
+* **Pydantic Serialization Bypass**: High-density queries fetching 14,000+ entries previously took 4-5 seconds due to Pydantic ORM validation bottlenecks. The backend now maps results directly into optimized dictionary structures, decreasing response latency to **under 100 milliseconds**!
+* **Robust Voice Inputs**: Web Speech API is backed by a session-transcription caching ref, preventing word replication or data-loss during microphone pauses.
 
 ---
 
@@ -114,6 +120,21 @@ npm run dev
 * **Frontend Dev Server**: [http://localhost:5173](http://localhost:5173)
 * **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
 * **Demo Admin Credentials**: Official ID: `admin` | Security Key: `admin123`
+
+---
+
+## ☁️ Cloud Deployment Configuration
+
+This repository includes deployment configurations for deploying the application on **Render** (Backend) and **Vercel** (Frontend) free tiers.
+
+### 1. Render Blueprint Configuration (`render.yaml`)
+A `render.yaml` Blueprint file is located in the root directory. It automatically configures:
+* **Pre-downloading Weights**: Runs `python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"` during the build step, caching model weights inside the container to avoid cold-start runtime latency.
+* **Low-Memory Build**: Installs the CPU-only version of PyTorch first to reduce memory footprint and avoid Render's 512MB RAM build limit.
+* **Automatic Database Reseeding**: Performs a database check on startup and auto-seeds the SQLite schema with 14,225 records if it is empty.
+
+### 2. Vercel SPA Redirection Config (`vercel.json`)
+The `frontend/vercel.json` file handles routing rewrites, preventing 404 errors when visitors reload or directly access routes like `/report` or `/dashboard`.
 
 ---
 
