@@ -62,9 +62,20 @@ app = FastAPI(
     version="0.1.0-mvp",
 )
 
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    for url in frontend_url.split(","):
+        cleaned = url.strip().rstrip("/")
+        origins.append(cleaned)
+        origins.append(f"{cleaned}/")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # tighten for production
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -103,6 +114,24 @@ def on_startup():
     except Exception:
         pass
     init_db()
+
+    # Auto-seed database if empty
+    try:
+        import sys
+        parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if parent_dir not in sys.path:
+            sys.path.append(parent_dir)
+        db = SessionLocal()
+        issues_cnt = db.query(Issue).count()
+        db.close()
+        if issues_cnt == 0:
+            print("Database is empty. Initiating automatic seeding...")
+            from seed import run_seed
+            run_seed(count=14225, wipe_first=False)
+            print("Automatic seeding completed.")
+    except Exception as e:
+        print(f"Warning: Auto-seeding database failed: {e}")
+
 
 
 @app.get("/")

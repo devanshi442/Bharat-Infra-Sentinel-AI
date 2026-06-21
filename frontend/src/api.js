@@ -1,6 +1,25 @@
 import { addToQueue, getQueue, removeFromQueue } from './offlineQueue'
 
-const BASE = '/api'
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || ''
+const BASE = `${BACKEND_URL}/api`
+
+function resolveAssetUrl(path) {
+  if (!path) return path
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path
+  }
+  const prefix = import.meta.env.VITE_API_BASE_URL || ''
+  return `${prefix}${path.startsWith('/') ? '' : '/'}${path}`
+}
+
+function resolveIssueUrls(issue) {
+  if (!issue) return issue
+  return {
+    ...issue,
+    image_path: resolveAssetUrl(issue.image_path),
+    after_image_path: resolveAssetUrl(issue.after_image_path),
+  }
+}
 
 async function handle(res) {
   if (res.status === 401) {
@@ -64,7 +83,8 @@ export const api = {
         headers: getHeaders({ preferCitizen: true }),
         body: form,
       })
-      return handle(res)
+      const data = await handle(res)
+      return resolveIssueUrls(data)
     } catch (err) {
       await addToQueue({ file, latitude, longitude, address, reporterNote, timestamp: Date.now() })
       return { offline: true }
@@ -74,12 +94,14 @@ export const api = {
   listIssues: async (params = {}) => {
     const qs = new URLSearchParams(params).toString()
     const res = await fetch(`${BASE}/issues${qs ? `?${qs}` : ''}`, { headers: getHeaders() })
-    return handle(res)
+    const data = await handle(res)
+    return Array.isArray(data) ? data.map(resolveIssueUrls) : data
   },
 
   getIssue: async (id) => {
     const res = await fetch(`${BASE}/issues/${id}`, { headers: getHeaders() })
-    return handle(res)
+    const data = await handle(res)
+    return resolveIssueUrls(data)
   },
 
   /**
@@ -100,7 +122,8 @@ export const api = {
       headers: getHeaders(), // let browser set Content-Type with boundary for FormData
       body: form,
     })
-    return handle(res)
+    const data = await handle(res)
+    return resolveIssueUrls(data)
   },
 
   dashboardStats: async () => {
@@ -217,7 +240,8 @@ export const api = {
 
   getMyReports: async () => {
     const res = await fetch(`${BASE}/issues/mine`, { headers: getHeaders({ preferCitizen: true }) })
-    return handle(res)
+    const data = await handle(res)
+    return Array.isArray(data) ? data.map(resolveIssueUrls) : data
   },
 
   getDepartmentStats: async () => {
