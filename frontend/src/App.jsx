@@ -30,6 +30,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/report" element={<CitizenReport />} />
+      <Route path="/my-reports" element={<Navigate to="/report" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={
         <ProtectedRoute>

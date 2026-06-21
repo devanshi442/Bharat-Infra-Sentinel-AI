@@ -86,22 +86,30 @@ export default function Dashboard() {
   const { t, i18n } = useTranslation()
   const { toasts, add: addToast } = useToast()
 
+  // New Department and Activity states
+  const [deptStats, setDeptStats] = useState([])
+  const [activities, setActivities] = useState([])
+
   // ── Data loading ──────────────────────────────────────────────────────────
   const loadData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
     try {
-      const [issuesData, statsData, wardData, contractorsData, forecastData] = await Promise.all([
+      const [issuesData, statsData, wardData, contractorsData, forecastData, deptData, activityData] = await Promise.all([
         api.listIssues({ sort_by_priority: true, search: searchQuery, lang: i18n.language }),
         api.dashboardStats(),
         api.wardHealth(),
         api.listContractors(),
         api.dashboardForecast(forecastDays, forecastResolveN),
+        api.getDepartmentStats(),
+        api.getActivityLog(),
       ])
       setIssues(issuesData)
       setStats(statsData)
       setWardHealth(wardData)
       setContractors(contractorsData)
       setForecast(forecastData)
+      setDeptStats(deptData || [])
+      setActivities(activityData || [])
     } catch (err) {
       console.error(err)
       addToast('Failed to load data. Check backend connection.', 'error')
@@ -164,20 +172,24 @@ export default function Dashboard() {
             <div className="flex flex-col gap-5">
               <ChartsPanel stats={stats} wardHealth={wardHealth} loading={loading} />
               <ContractorsPanel contractors={contractors} loading={loading} />
+              <DepartmentsPanel departments={deptStats} loading={loading} />
             </div>
           </div>
         </div>
 
-        {/* ── Right column: priority queue ── */}
-        <PriorityQueue
-          issues={filteredIssues}
-          filterStatus={filterStatus}
-          onFilterChange={setFilterStatus}
-          onSelect={setSelectedIssue}
-          onStatusChange={handleStatusChange}
-          loading={loading}
-          slaBreaches={slaBreaches}
-        />
+        {/* ── Right column: priority queue & activity log ── */}
+        <div className="flex flex-col gap-5 lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-104px)]">
+          <PriorityQueue
+            issues={filteredIssues}
+            filterStatus={filterStatus}
+            onFilterChange={setFilterStatus}
+            onSelect={setSelectedIssue}
+            onStatusChange={handleStatusChange}
+            loading={loading}
+            slaBreaches={slaBreaches}
+          />
+          <ActivityLogPanel activities={activities} loading={loading} />
+        </div>
       </div>
 
       {selectedIssue && (
@@ -709,7 +721,7 @@ function ContractorsPanel({ contractors, loading }) {
 function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatusChange, loading, slaBreaches }) {
   const { t } = useTranslation()
   return (
-    <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl flex flex-col max-h-[600px] lg:max-h-[calc(100vh-104px)] lg:sticky lg:top-[84px] transition-colors duration-300">
+    <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl flex flex-col flex-1 min-h-0 transition-colors duration-300">
       <div className="px-5 py-3.5 border-b border-border-muted flex justify-between items-start gap-2">
         <div className="min-w-0">
           <h2 className="font-display font-medium text-sm mb-3 text-brand-deep dark:text-purple-100">
@@ -1024,4 +1036,146 @@ const tooltipStyle = {
   borderRadius: 8,
   fontSize: 12,
   color: '#e9d5ff',
+}
+
+// ---------------------------------------------------------------------------
+// Department Performance Panel
+// ---------------------------------------------------------------------------
+function DepartmentsPanel({ departments, loading }) {
+  const { t } = useTranslation()
+
+  if (loading && departments.length === 0) {
+    return (
+      <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl p-5">
+        <Skeleton className="w-40 h-4 mb-4" />
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-10 w-full mb-3 animate-pulse" />)}
+      </div>
+    )
+  }
+
+  // Sort departments by SLA breach count desc, then total issues desc
+  const sortedDepts = [...departments].sort((a, b) => {
+    if (b.sla_breach_count !== a.sla_breach_count) {
+      return b.sla_breach_count - a.sla_breach_count
+    }
+    return b.total_issues - a.total_issues
+  })
+
+  return (
+    <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl p-5 transition-colors duration-300">
+      <h2 className="font-display font-medium text-sm mb-4 text-brand-deep dark:text-purple-100">
+        Department Performance
+      </h2>
+      <div className="space-y-4">
+        {sortedDepts.map(dept => {
+          const total = dept.total_issues || 1
+          const pctOpen = (dept.open_count / total) * 100
+          const pctProgress = (dept.in_progress_count / total) * 100
+          const pctResolved = (dept.resolved_count / total) * 100
+
+          return (
+            <div key={dept.name} className="group rounded-lg p-2.5 border border-border-muted bg-surface-2/20 dark:bg-surface-2/5 hover:bg-surface-2/45 transition-colors">
+              <div className="flex justify-between items-start text-xs mb-2 gap-2">
+                <div className="font-semibold text-slate-700 dark:text-purple-200 leading-snug truncate" title={dept.name}>
+                  {dept.name}
+                </div>
+                {dept.sla_breach_count > 0 && (
+                  <span className="text-[10px] font-bold text-red-500 dark:text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full shrink-0 animate-pulse">
+                    {dept.sla_breach_count} breach{dept.sla_breach_count > 1 ? 'es' : ''}
+                  </span>
+                )}
+              </div>
+
+              {/* Stacked status bar */}
+              <div className="h-2 bg-surface-2 dark:bg-surface-2 rounded-full overflow-hidden flex mb-2">
+                {dept.open_count > 0 && <div style={{ width: `${pctOpen}%` }} className="bg-red-500 dark:bg-red-600 h-full" title={`Open: ${dept.open_count}`} />}
+                {dept.in_progress_count > 0 && <div style={{ width: `${pctProgress}%` }} className="bg-blue-500 dark:bg-blue-600 h-full" title={`In Progress: ${dept.in_progress_count}`} />}
+                {dept.resolved_count > 0 && <div style={{ width: `${pctResolved}%` }} className="bg-emerald-500 dark:bg-emerald-600 h-full" title={`Resolved: ${dept.resolved_count}`} />}
+              </div>
+
+              <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-purple-400 font-mono">
+                <span>
+                  O: {dept.open_count} · IP: {dept.in_progress_count} · R: {dept.resolved_count}
+                </span>
+                <span>
+                  Avg SLA: <span className="font-bold text-brand-primary dark:text-brand-medium">{dept.avg_resolution_time}d</span>
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Helper to compile activity log strings
+function getLogMessage(log, t) {
+  const typeMeta = ISSUE_TYPE_META[log.issue_type] || ISSUE_TYPE_META.other
+  const icon = typeMeta.icon || '⚠️'
+  const wardText = log.ward ? ` in ${log.ward}` : ''
+  
+  if (log.action === 'status_changed') {
+    const oldStatusLabel = STATUS_META[log.old_value]?.label || log.old_value
+    const newStatusLabel = STATUS_META[log.new_value]?.label || log.new_value
+    return (
+      <span>
+        {icon} <strong>Issue #{log.issue_id}</strong> status changed from <span className="font-semibold text-slate-600 dark:text-purple-300">{oldStatusLabel}</span> to <span className="font-semibold text-slate-800 dark:text-purple-100">{newStatusLabel}</span>{wardText}.
+      </span>
+    )
+  } else if (log.action === 'contractor_assigned') {
+    return (
+      <span>
+        {icon} <strong>Issue #{log.issue_id}</strong> assigned to contractor <span className="font-semibold text-brand-primary dark:text-brand-medium">{log.new_value}</span>{wardText} (previously: {log.old_value}).
+      </span>
+    )
+  }
+  return `Issue #${log.issue_id} updated.`
+}
+
+// ---------------------------------------------------------------------------
+// Activity Log Feed Panel
+// ---------------------------------------------------------------------------
+function ActivityLogPanel({ activities, loading }) {
+  const { t } = useTranslation()
+
+  if (loading && activities.length === 0) {
+    return (
+      <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl p-5 h-[250px] flex flex-col">
+        <Skeleton className="w-32 h-4 mb-4" />
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-8 w-full mb-2 animate-pulse" />)}
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-surface dark:bg-surface border border-border-muted rounded-xl flex flex-col h-[250px] transition-colors duration-300">
+      <div className="px-5 py-3 border-b border-border-muted">
+        <h2 className="font-display font-medium text-xs text-brand-deep dark:text-purple-100 uppercase tracking-wider">
+          System Audit Feed
+        </h2>
+      </div>
+
+      <div className="overflow-y-auto scroll-thin flex-1 divide-y divide-border-muted">
+        {activities.length === 0 ? (
+          <div className="px-5 py-8 text-center">
+            <Clock className="w-6 h-6 text-slate-300 dark:text-purple-900 mx-auto mb-2" />
+            <p className="text-xs text-slate-500 dark:text-purple-400 mb-1">No recent system activity</p>
+            <p className="text-[9px] text-slate-400 dark:text-purple-600 leading-normal">
+              Audit logs will display updates when issue statuses or contractors are modified.
+            </p>
+          </div>
+        ) : (
+          activities.map(log => (
+            <div key={log.id} className="px-5 py-2.5 text-[11px] text-slate-600 dark:text-purple-300 leading-normal hover:bg-surface-2/10 transition-colors">
+              <div className="mb-0.5">{getLogMessage(log, t)}</div>
+              <div className="text-[9px] text-slate-400 dark:text-purple-500 font-mono">
+                {timeAgo(log.timestamp, t)}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  )
 }

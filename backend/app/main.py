@@ -25,13 +25,14 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
-from app.database import init_db, get_db, Issue, Contractor, SessionLocal
+from app.database import init_db, get_db, Issue, Contractor, SessionLocal, ActivityLog
 from app.detection import classify_issue
 from app.prediction import predict_failure_probability, compute_priority_score, compute_ward_health_index
 from app.routing import get_department
 from app.wards import get_location_details, get_all_wards
-from app.schemas import IssueResponse, IssueStatusUpdate, DashboardStats, WardHealth
-from app.auth import verify_demo_auth
+from app.schemas import IssueResponse, IssueStatusUpdate, DashboardStats, WardHealth, DepartmentStats, ActivityLogResponse
+from app.auth import verify_demo_auth, request_otp as auth_request_otp, verify_otp as auth_verify_otp, verify_citizen_auth
+from pydantic import BaseModel
 from pydantic import BaseModel
 
 class LoginRequest(BaseModel):
@@ -43,6 +44,15 @@ class TranslateRequest(BaseModel):
     text: str
     target_lang: str
 
+
+class CitizenRequest(BaseModel):
+    name: str
+    phone: str
+
+
+class CitizenVerify(BaseModel):
+    phone: str
+    otp: str
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -177,6 +187,7 @@ async def upload_issue(
     longitude: float = Form(...),
     address: str | None = Form(None),
     reporter_note: str | None = Form(None),
+    reporter_phone: str | None = Form(None),
     original_language: str = Form("en"),
     db: Session = Depends(get_db),
 ):
@@ -246,6 +257,7 @@ async def upload_issue(
         ward=ward,
         address=address,
         reporter_note=reporter_note,
+        reporter_phone=reporter_phone,
         original_language=original_language,
         status="reported",
         priority_score=priority,
@@ -260,6 +272,25 @@ async def upload_issue(
     db.refresh(issue)
 
     return issue
+
+
+@app.post("/api/auth/citizen/request-otp")
+def citizen_request_otp(req: CitizenRequest):
+    otp = auth_request_otp(req.name, req.phone)
+    return {"otp": otp, "note": "DEMO MODE: real deployment would SMS this via a provider like MSG91/Twilio, not return it in the response"}
+
+
+@app.post("/api/auth/citizen/verify-otp")
+def citizen_verify_otp(req: CitizenVerify):
+    resp = auth_verify_otp(req.phone, req.otp)
+    return {"token": resp["token"], "name": resp["name"], "phone": resp["phone"]}
+
+
+@app.get("/api/issues/mine", response_model=list[IssueResponse])
+def my_issues(db: Session = Depends(get_db), citizen: dict = Depends(verify_citizen_auth)):
+    phone = citizen.get("phone")
+    issues = db.query(Issue).filter(Issue.reporter_phone == phone).order_by(Issue.created_at.desc()).all()
+    return issues
 
 
 @app.get("/api/issues", response_model=list[IssueResponse])
@@ -340,6 +371,9 @@ def update_issue_status(
     if not issue:
         raise HTTPException(status_code=404, detail="Issue not found")
 
+    old_status = issue.status
+    old_contractor = issue.contractor
+
     if contractor and contractor != issue.contractor:
         issue.contractor = contractor
         contractor_record = db.query(Contractor).filter(Contractor.name == contractor).first()
@@ -363,6 +397,27 @@ def update_issue_status(
         with open(filepath, "wb") as f:
             f.write(after_image.file.read())
         issue.after_image_path = f"/uploads/{filename}"
+
+    # Write log entries
+    if old_status != status:
+        log_status = ActivityLog(
+            issue_id=issue.id,
+            action="status_changed",
+            old_value=old_status,
+            new_value=status,
+            timestamp=datetime.now(timezone.utc)
+        )
+        db.add(log_status)
+
+    if contractor and old_contractor != contractor:
+        log_contractor = ActivityLog(
+            issue_id=issue.id,
+            action="contractor_assigned",
+            old_value=old_contractor or "Unassigned",
+            new_value=contractor,
+            timestamp=datetime.now(timezone.utc)
+        )
+        db.add(log_contractor)
 
     issue.updated_at = datetime.now(timezone.utc)
     db.commit()
@@ -517,6 +572,109 @@ def dashboard_forecast(
         issue.age_days = (now - created).days
 
     return forecast_health_index(issues, days=days, resolve_top_n=resolve_top_n)
+
+
+@app.get("/api/dashboard/departments", response_model=list[DepartmentStats])
+def get_departments_stats(db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
+    issues = db.query(Issue).all()
+    
+    depts = [
+        "Roads & Public Works Department",
+        "Drainage & Flood Control Department",
+        "Solid Waste Management Department",
+        "Electrical & Street Lighting Department",
+        "General Civic Grievance Cell"
+    ]
+    
+    stats = {
+        dept: {
+            "name": dept,
+            "total_issues": 0,
+            "resolved_count": 0,
+            "in_progress_count": 0,
+            "open_count": 0,
+            "avg_resolution_time": 0.0,
+            "sla_breach_count": 0,
+            "_resolution_times": [],
+        }
+        for dept in depts
+    }
+    
+    for issue in issues:
+        dept = issue.assigned_department or "General Civic Grievance Cell"
+        if dept not in stats:
+            stats[dept] = {
+                "name": dept,
+                "total_issues": 0,
+                "resolved_count": 0,
+                "in_progress_count": 0,
+                "open_count": 0,
+                "avg_resolution_time": 0.0,
+                "sla_breach_count": 0,
+                "_resolution_times": [],
+            }
+            
+        stats[dept]["total_issues"] += 1
+        
+        if issue.status == "resolved":
+            stats[dept]["resolved_count"] += 1
+            if issue.updated_at and issue.created_at:
+                diff = issue.updated_at - issue.created_at
+                days = diff.total_seconds() / 86400.0
+                stats[dept]["_resolution_times"].append(days)
+        elif issue.status == "in_progress":
+            stats[dept]["in_progress_count"] += 1
+        elif issue.status == "reported":
+            stats[dept]["open_count"] += 1
+            
+        if issue.status != "resolved" and issue.sla_breach:
+            stats[dept]["sla_breach_count"] += 1
+            
+    results = []
+    for dept, data in stats.items():
+        times = data["_resolution_times"]
+        if times:
+            data["avg_resolution_time"] = round(sum(times) / len(times), 1)
+        else:
+            data["avg_resolution_time"] = 0.0
+        del data["_resolution_times"]
+        results.append(data)
+        
+    return results
+
+
+@app.get("/api/dashboard/activity", response_model=list[ActivityLogResponse])
+def get_activity_log(db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
+    results = (
+        db.query(
+            ActivityLog.id,
+            ActivityLog.issue_id,
+            ActivityLog.action,
+            ActivityLog.old_value,
+            ActivityLog.new_value,
+            ActivityLog.timestamp,
+            Issue.issue_type,
+            Issue.ward
+        )
+        .join(Issue, ActivityLog.issue_id == Issue.id)
+        .order_by(ActivityLog.timestamp.desc())
+        .limit(50)
+        .all()
+    )
+    
+    return [
+        ActivityLogResponse(
+            id=r[0],
+            issue_id=r[1],
+            action=r[2],
+            old_value=r[3],
+            new_value=r[4],
+            timestamp=r[5],
+            issue_type=r[6],
+            ward=r[7]
+        )
+        for r in results
+    ]
 
 
 @app.get("/api/contractors")

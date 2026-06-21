@@ -49,6 +49,7 @@ class Issue(Base):
 
     # Citizen info (minimal, optional)
     reporter_note = Column(Text, nullable=True)
+    reporter_phone = Column(String, nullable=True)
     report_count = Column(Integer, default=1)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -87,12 +88,29 @@ class Contractor(Base):
     performance_score = Column(Float, default=100.0)  # 0-100
 
 
+class ActivityLog(Base):
+    """Tracks audit log of actions on issues."""
+    __tablename__ = "activity_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    issue_id = Column(Integer, nullable=False)
+    action = Column(String, nullable=False)  # "status_changed" | "contractor_assigned"
+    old_value = Column(String, nullable=True)
+    new_value = Column(String, nullable=True)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)
     # Raw SQL patch to add report_count to existing DB without full wipe
     with engine.connect() as conn:
         try:
             conn.execute(text("ALTER TABLE issues ADD COLUMN report_count INTEGER DEFAULT 1"))
+            conn.commit()
+        except Exception:
+            pass  # column likely already exists
+        try:
+            conn.execute(text("ALTER TABLE issues ADD COLUMN reporter_phone VARCHAR"))
             conn.commit()
         except Exception:
             pass  # column likely already exists

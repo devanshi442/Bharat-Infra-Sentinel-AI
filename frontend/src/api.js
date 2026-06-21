@@ -4,8 +4,20 @@ const BASE = '/api'
 
 async function handle(res) {
   if (res.status === 401) {
-    localStorage.removeItem('demo-token')
-    window.location.href = '/login'
+    const adminToken = localStorage.getItem('demo-token')
+    const citizenToken = localStorage.getItem('citizen-token')
+    if (adminToken) {
+      localStorage.removeItem('demo-token')
+      window.location.href = '/login'
+    } else if (citizenToken) {
+      localStorage.removeItem('citizen-token')
+      localStorage.removeItem('citizen-name')
+      localStorage.removeItem('citizen-phone')
+      sessionStorage.setItem('citizen_session_expired', 'true')
+      window.location.reload()
+    } else {
+      window.location.href = '/login'
+    }
     return
   }
   if (!res.ok) {
@@ -15,16 +27,23 @@ async function handle(res) {
   return res.json()
 }
 
-function getHeaders(custom = {}) {
-  const token = localStorage.getItem('demo-token')
+function getHeaders(options = {}, custom = {}) {
+  // options: { preferCitizen: boolean }
+  const citizenToken = localStorage.getItem('citizen-token')
+  const adminToken = localStorage.getItem('demo-token')
+  let authToken = null
+  if (options.preferCitizen && citizenToken) authToken = citizenToken
+  else if (adminToken) authToken = adminToken
+  else if (citizenToken) authToken = citizenToken
+
   return {
     ...custom,
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
   }
 }
 
 export const api = {
-  uploadIssue: async ({ file, latitude, longitude, address, reporterNote, originalLanguage }) => {
+  uploadIssue: async ({ file, latitude, longitude, address, reporterNote, originalLanguage, reporterPhone }) => {
     const form = new FormData()
     form.append('file', file)
     form.append('latitude', latitude)
@@ -32,6 +51,7 @@ export const api = {
     if (address) form.append('address', address)
     if (reporterNote) form.append('reporter_note', reporterNote)
     if (originalLanguage) form.append('original_language', originalLanguage)
+    if (reporterPhone) form.append('reporter_phone', reporterPhone)
 
     if (!navigator.onLine) {
       await addToQueue({ file, latitude, longitude, address, reporterNote, originalLanguage, timestamp: Date.now() })
@@ -41,7 +61,7 @@ export const api = {
     try {
       const res = await fetch(`${BASE}/issues/upload`, {
         method: 'POST',
-        headers: getHeaders(),
+        headers: getHeaders({ preferCitizen: true }),
         body: form,
       })
       return handle(res)
@@ -148,6 +168,7 @@ export const api = {
         form.append('longitude', item.longitude)
         if (item.address) form.append('address', item.address)
         if (item.reporterNote) form.append('reporter_note', item.reporterNote)
+        if (item.reporterPhone) form.append('reporter_phone', item.reporterPhone)
 
         const res = await fetch(`${BASE}/issues/upload`, {
           method: 'POST',
@@ -161,5 +182,51 @@ export const api = {
         console.error('Failed to sync offline item', err)
       }
     }
-  }
+  },
+  
+  // Citizen auth (demo OTP)
+  requestOtp: async (name, phone) => {
+    const res = await fetch(`${BASE}/auth/citizen/request-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone })
+    })
+    return handle(res)
+  },
+
+  verifyOtp: async (phone, otp) => {
+    const res = await fetch(`${BASE}/auth/citizen/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, otp })
+    })
+    const data = await handle(res)
+    if (data && data.token) {
+      localStorage.setItem('citizen-token', data.token)
+      localStorage.setItem('citizen-name', data.name || '')
+      localStorage.setItem('citizen-phone', data.phone || '')
+    }
+    return data
+  },
+
+  logoutCitizen: () => {
+    localStorage.removeItem('citizen-token')
+    localStorage.removeItem('citizen-name')
+    localStorage.removeItem('citizen-phone')
+  },
+
+  getMyReports: async () => {
+    const res = await fetch(`${BASE}/issues/mine`, { headers: getHeaders({ preferCitizen: true }) })
+    return handle(res)
+  },
+
+  getDepartmentStats: async () => {
+    const res = await fetch(`${BASE}/dashboard/departments`, { headers: getHeaders() })
+    return handle(res)
+  },
+
+  getActivityLog: async () => {
+    const res = await fetch(`${BASE}/dashboard/activity`, { headers: getHeaders() })
+    return handle(res)
+  },
 }

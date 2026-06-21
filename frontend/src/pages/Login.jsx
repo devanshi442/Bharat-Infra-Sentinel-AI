@@ -63,7 +63,7 @@ export default function Login() {
         <div className="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border border-border-muted py-8 px-4 shadow-2xl shadow-brand-primary/10 sm:rounded-2xl sm:px-10">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label className="block text-xs font-semibold text-brand-primary dark:text-brand-medium uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">
                 {t('official_id', 'Official ID')}
               </label>
               <div className="mt-1">
@@ -72,14 +72,14 @@ export default function Login() {
                   required
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  className="w-full bg-surface-2 dark:bg-surface-2 border border-border-muted rounded-xl px-4 py-3 text-brand-deep dark:text-purple-100 placeholder-slate-400 dark:placeholder-purple-600 focus:border-brand-medium focus:ring-1 focus:ring-brand-medium transition-all outline-none"
+                  className="w-full bg-surface-2 dark:bg-surface-2 border border-border-muted rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-purple-650 focus:border-brand-medium focus:ring-1 focus:ring-brand-medium transition-all outline-none"
                   placeholder={t('enter_assigned_id', 'Enter your assigned ID')}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-primary dark:text-brand-medium uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-2">
                 {t('security_key', 'Security Key')}
               </label>
               <div className="mt-1">
@@ -88,7 +88,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-surface-2 dark:bg-surface-2 border border-border-muted rounded-xl px-4 py-3 text-brand-deep dark:text-purple-100 placeholder-slate-400 dark:placeholder-purple-600 focus:border-brand-medium focus:ring-1 focus:ring-brand-medium transition-all outline-none"
+                  className="w-full bg-surface-2 dark:bg-surface-2 border border-border-muted rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-purple-650 focus:border-brand-medium focus:ring-1 focus:ring-brand-medium transition-all outline-none"
                   placeholder="••••••••"
                 />
               </div>

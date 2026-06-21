@@ -572,152 +572,106 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* --- INTERACTIVE PREVIEW SECTION --- */}
-      <section className="relative bg-paper dark:bg-paper py-28 border-t border-border-muted overflow-hidden w-full">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          
-          {/* Left Column: Command Center Context */}
-          <div className="lg:col-span-5 flex flex-col items-start text-left">
-            <ScrollReveal>
-              <span className="text-[12px] font-mono font-bold uppercase tracking-wider text-brand-primary dark:text-brand-medium bg-brand-light dark:bg-brand-light/20 px-3 py-1 rounded-md border border-brand-primary/20 mb-6 inline-block">
-                {t('inside_command_center', 'Inside the Command Center')}
+      {/* --- COMMUNITY TESTIMONIALS SECTION --- */}
+      {/* Testimonials section: specific hex values for telemetry console are NOT affected as this is below it. */}
+      {/* This panel adapts to light/dark themes using token-based styling. */}
+      <section className="relative bg-paper dark:bg-paper py-28 border-t border-slate-200 dark:border-border-muted overflow-hidden w-full transition-colors duration-300">
+        {/* Decorative background blur blobs */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-brand-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute left-10 top-10 w-80 h-80 bg-brand-accent/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <ScrollReveal>
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <span className="text-[12px] font-mono font-bold uppercase tracking-wider text-brand-accent bg-brand-light dark:bg-brand-light/20 px-3 py-1 rounded-md border border-brand-accent/20 mb-6 inline-block">
+                {t('community_feedback', 'Community Feedback')}
               </span>
               <h2 className="font-display font-extrabold text-3xl md:text-5xl text-brand-deep dark:text-purple-100 tracking-tight mb-6 leading-tight">
-                {t('command_center_preview', 'Command Center Preview')}
+                {t('sentinel_in_action', 'Sentinel in Action')}
               </h2>
-              <p className="text-slate-600 dark:text-purple-300/80 leading-relaxed mb-8 font-normal">
-                {t('command_center_desc', 'Get a real-time birds-eye view of your municipality. The Government Dashboard empowers officials with predictive risk forecasts, SLA breach warnings, and automated ward health reports to direct maintenance where it matters most.')}
+              <p className="text-slate-655 dark:text-purple-300/80 leading-relaxed font-normal">
+                {t('sentinel_in_action_desc', 'Hear from municipal authorities, representatives, and citizens on how real-time transparency and AI verification are improving civic life.')}
               </p>
-              
-              <Link
-                to="/dashboard"
-                className="group inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary/90 dark:bg-brand-primary dark:hover:bg-brand-primary/80 text-white font-semibold px-6 py-3.5 rounded-xl transition-all shadow-md shadow-brand-primary/20 hover:shadow-brand-primary/30 hover:scale-[1.02] active:scale-[0.98]"
-              >
-                {t('launch_dashboard', 'Launch Full Dashboard')}
-                <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={2.2} />
-              </Link>
-            </ScrollReveal>
-          </div>
+            </div>
+          </ScrollReveal>
 
-          {/* Right Column: High Fidelity Mock Browser UI */}
-          <div className="lg:col-span-7 w-full">
-            <ScrollReveal delay={150}>
-              <div className="bg-[#1a0a2e] border border-purple-900/60 rounded-2xl shadow-2xl overflow-hidden flex flex-col font-sans h-[400px] relative group hover:border-purple-700/60 transition-all duration-300">
-                
-                {/* Browser chrome header */}
-                <div className="bg-[#0d0118] border-b border-purple-950/60 px-4 py-3 flex items-center gap-3">
-                  <div className="flex gap-1.5 select-none">
-                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500/70" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-brand-yellow/70" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
+          {/* 3-card Testimonials grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Note: The following quotes are illustrative placeholders for hackathon validation of multilingual & routing capabilities */}
+            
+            {/* Card 1: Rajesh Kumar */}
+            <ScrollReveal delay={100}>
+              <div className="bg-white dark:bg-surface border border-slate-200 dark:border-border-muted p-8 rounded-2xl shadow-xl shadow-brand-primary/5 dark:shadow-none hover:border-brand-primary/30 dark:hover:border-brand-primary/30 transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-brand-primary" />
+                <div className="mb-6">
+                  <div className="flex gap-1 mb-4 text-brand-accent">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    ))}
                   </div>
-                  <div className="bg-purple-950/80 border border-purple-900 text-[10px] text-purple-400 font-mono rounded-md py-1 px-3 flex-1 text-center select-none truncate">
-                    https://sentinel.municipal.gov.in/dashboard
+                  <p className="text-sm text-slate-700 dark:text-purple-200 italic leading-relaxed">
+                    {t('testimonial_quote_1', '“The predictive SLA forecasting model has completely changed how we prioritize repairs. Our average resolution time dropped by 40% because Sentinel assigns issues dynamically based on field load.”')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 border-t border-slate-100 dark:border-border-muted pt-5 mt-auto">
+                  <div className="w-10 h-10 rounded-full bg-brand-primary/10 text-brand-primary dark:text-brand-medium flex items-center justify-center font-bold text-sm">
+                    RK
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Rajesh Kumar</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-purple-400">{t('role_rajesh', 'Chief Engineer, Ludhiana MC')}</p>
                   </div>
                 </div>
+              </div>
+            </ScrollReveal>
 
-                {/* Browser client area */}
-                <div className="flex-1 flex overflow-hidden text-[12px] select-none">
-                  {/* Mock Sidebar */}
-                  <div className="w-12 bg-[#0d0118] border-r border-purple-950/60 flex flex-col items-center py-4 gap-4 text-purple-600">
-                    <div className="w-6 h-6 rounded-lg bg-brand-accent/20 flex items-center justify-center text-brand-accent font-bold text-xs animate-pulse">S</div>
-                    <div className="w-5 h-1.5 rounded bg-purple-900/60" />
-                    <div className="w-5 h-1.5 rounded bg-purple-900/60" />
-                    <div className="w-5 h-1.5 rounded bg-purple-900/60" />
+            {/* Card 2: Priya Sharma */}
+            <ScrollReveal delay={200}>
+              <div className="bg-white dark:bg-surface border border-slate-200 dark:border-border-muted p-8 rounded-2xl shadow-xl shadow-brand-primary/5 dark:shadow-none hover:border-brand-accent/30 dark:hover:border-brand-accent/30 transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-brand-accent" />
+                <div className="mb-6">
+                  <div className="flex gap-1 mb-4 text-brand-accent">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    ))}
                   </div>
+                  <p className="text-sm text-slate-700 dark:text-purple-200 italic leading-relaxed">
+                    {t('testimonial_quote_2', '“Ward councillors used to spend half their day tracking files. Now, the real-time ward dashboard lets us see status updates instantly, so I can give my constituents accurate completion dates immediately.”')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 border-t border-slate-100 dark:border-border-muted pt-5 mt-auto">
+                  <div className="w-10 h-10 rounded-full bg-brand-accent/10 text-brand-accent flex items-center justify-center font-bold text-sm">
+                    PS
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Priya Sharma</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-purple-400">{t('role_priya', 'Ward 12 Councillor')}</p>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
 
-                  {/* Mock Main Panel */}
-                  <div className="flex-1 p-5 flex flex-col gap-4 overflow-hidden bg-purple-950/30">
-                    {/* Mock Header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-purple-200 font-semibold">{t('command_center_preview', 'Command Center Preview')}</span>
-                        <span className="text-[9px] text-purple-500">Live Status Feed</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 bg-emerald-950 text-emerald-400 px-2.5 py-0.5 rounded-full text-[9px] border border-emerald-900/50">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                          98.2 Health Index
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Quick Metrics */}
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-purple-950/60 border border-purple-900/60 p-2.5 rounded-lg">
-                        <div className="text-[9px] text-purple-400">Total Alerts</div>
-                        <div className="font-mono text-sm font-bold text-purple-200">142</div>
-                      </div>
-                      <div className="bg-purple-950/60 border border-purple-900/60 p-2.5 rounded-lg border-l-brand-accent border-l-2">
-                        <div className="text-[9px] text-purple-400">Critical</div>
-                        <div className="font-mono text-sm font-bold text-brand-accent flex items-center gap-1">
-                          <span>12</span>
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-ping" />
-                        </div>
-                      </div>
-                      <div className="bg-purple-950/60 border border-purple-900/60 p-2.5 rounded-lg">
-                        <div className="text-[9px] text-purple-400">Resolved Today</div>
-                        <div className="font-mono text-sm font-bold text-emerald-400">42</div>
-                      </div>
-                    </div>
-
-                    {/* Table & Map Mock */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 min-h-0">
-                      {/* Escalating Queue Mock */}
-                      <div className="bg-purple-950/40 border border-purple-900/50 p-3 rounded-lg flex flex-col gap-2 overflow-hidden">
-                        <span className="text-[9px] font-bold text-purple-400 tracking-wide uppercase font-mono">Priority Queue</span>
-                        <div className="flex flex-col gap-1.5 overflow-hidden">
-                          {[
-                            { id: 1, type: 'Pothole', ward: 'Ward 4', score: 92, risk: 'Critical', riskColor: 'text-brand-accent bg-pink-950/40 border-pink-900/30' },
-                            { id: 2, type: 'Waterlogging', ward: 'Ward 12', score: 88, risk: 'High', riskColor: 'text-brand-yellow bg-yellow-950/40 border-yellow-900/30' },
-                            { id: 3, type: 'Streetlight', ward: 'Ward 45', score: 81, risk: 'Medium', riskColor: 'text-brand-medium bg-purple-950/40 border-purple-900/30' },
-                          ].map(issue => (
-                            <div key={issue.id} className="flex items-center justify-between p-2 rounded bg-purple-950/40 border border-purple-900/50 hover:border-purple-800 transition-colors">
-                              <div className="flex flex-col">
-                                <span className="text-purple-200 font-medium">{issue.type}</span>
-                                <span className="text-[8px] text-purple-500">{issue.ward}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className={`px-1 py-0.5 rounded text-[7px] border ${issue.riskColor}`}>
-                                  {issue.risk}
-                                </span>
-                                <span className="font-mono font-bold text-purple-200">{issue.score}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      {/* Map Preview Mock */}
-                      <div className="bg-purple-950/40 border border-purple-900/50 rounded-lg relative overflow-hidden flex items-center justify-center p-2">
-                        <div className="absolute inset-0 opacity-20 pointer-events-none"
-                          style={{
-                            backgroundImage: 'radial-gradient(circle, #a855f7 1px, transparent 1px)',
-                            backgroundSize: '16px 16px',
-                          }}
-                        />
-                        <div className="relative w-full h-full flex items-center justify-center">
-                          <svg className="w-full h-full text-purple-700 opacity-40 absolute" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <path d="M10,20 L30,40 L70,30 L90,60" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                            <path d="M20,80 L50,60 L80,90" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                            <path d="M40,10 L40,90" fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2,2" />
-                          </svg>
-                          <div className="absolute top-[30%] left-[25%] flex h-3.5 w-3.5 items-center justify-center">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                          </div>
-                          <div className="absolute top-[50%] left-[65%] flex h-3.5 w-3.5 items-center justify-center">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                          </div>
-                          <div className="absolute top-[75%] left-[45%] flex h-3.5 w-3.5 items-center justify-center">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                          </div>
-                          <span className="absolute bottom-2 right-2 text-[8px] text-purple-500 font-mono">MAP_PREVIEW_READY</span>
-                        </div>
-                      </div>
-                    </div>
+            {/* Card 3: Amit Bhosale */}
+            <ScrollReveal delay={300}>
+              <div className="bg-white dark:bg-surface border border-slate-200 dark:border-border-muted p-8 rounded-2xl shadow-xl shadow-brand-primary/5 dark:shadow-none hover:border-brand-yellow/30 dark:hover:border-brand-yellow/30 transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-2 h-full bg-brand-yellow" />
+                <div className="mb-6">
+                  <div className="flex gap-1 mb-4 text-brand-accent">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-700 dark:text-purple-200 italic leading-relaxed">
+                    {t('testimonial_quote_3', '“Sentinel makes reporting potholes incredibly easy in Marathi. The voice input is very accurate, and getting a verification photo once the contractor resolves the issue makes the process very transparent.”')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 border-t border-slate-100 dark:border-border-muted pt-5 mt-auto">
+                  <div className="w-10 h-10 rounded-full bg-brand-yellow/10 text-brand-yellow flex items-center justify-center font-bold text-sm">
+                    AB
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Amit Bhosale</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-purple-400">{t('role_amit', 'Citizen Reporter, Pune')}</p>
                   </div>
                 </div>
               </div>

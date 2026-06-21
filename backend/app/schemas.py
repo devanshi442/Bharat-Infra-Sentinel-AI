@@ -6,6 +6,7 @@ from datetime import datetime
 class IssueResponse(BaseModel):
     id: int
     image_path: str
+    after_image_path: Optional[str] = None
     issue_type: str
     confidence: float
     severity_score: float
@@ -22,6 +23,7 @@ class IssueResponse(BaseModel):
     contractor: Optional[str] = None
     failure_probability_30d: Optional[float] = None
     reporter_note: Optional[str] = None
+    reporter_phone: Optional[str] = None
     original_language: str = "en"
     report_count: int = 1
     days_until_sla: Optional[int] = None
@@ -58,3 +60,28 @@ class WardHealth(BaseModel):
     health_index: float
     total_issues: int
     critical_issues: int
+
+
+class DepartmentStats(BaseModel):
+    name: str
+    total_issues: int
+    resolved_count: int
+    in_progress_count: int
+    open_count: int
+    avg_resolution_time: float
+    sla_breach_count: int
+
+
+class ActivityLogResponse(BaseModel):
+    id: int
+    issue_id: int
+    action: str
+    old_value: Optional[str] = None
+    new_value: Optional[str] = None
+    timestamp: datetime
+    issue_type: str
+    ward: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
