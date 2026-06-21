@@ -4,16 +4,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Design tokens — "Civic Command Centre" direction:
-        // deep navy base (not generic SaaS blue), signal-orange for
-        // alerts/priority, a muted teal for "healthy/resolved" states.
-        ink: {
-          950: '#0a0e17',
-          900: '#0f1521',
-          800: '#161d2c',
-          700: '#202940',
-          600: '#2d3855',
-        },
         signal: {
           50: '#fff4ed',
           100: '#ffe4d1',
@@ -27,7 +17,7 @@ export default {
           500: '#14b890',
           600: '#0f9a78',
         },
-        paper: '#f6f4ef',
+        paper: '#f8fafc',
       },
       fontFamily: {
         display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],

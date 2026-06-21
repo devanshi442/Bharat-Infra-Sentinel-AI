@@ -11,7 +11,7 @@ html, body, #root {
 }
 
 body {
-  background: #f6f4ef;
+  background: #f8fafc;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -39,7 +39,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Scrollbar styling for the dark dashboard panels */
+/* Scrollbar styling for the light panels */
 .scroll-thin::-webkit-scrollbar {
   width: 6px;
 }
@@ -47,6 +47,6 @@ body {
   background: transparent;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: #2d3855;
+  background: #cbd5e1;
   border-radius: 3px;
 }

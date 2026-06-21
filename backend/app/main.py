@@ -29,7 +29,7 @@ from app.database import init_db, get_db, Issue, Contractor
 from app.detection import classify_issue
 from app.prediction import predict_failure_probability, compute_priority_score, compute_ward_health_index
 from app.routing import get_department
-from app.wards import get_ward_for_location, WARDS
+from app.wards import get_location_details, get_all_wards
 from app.schemas import IssueResponse, IssueStatusUpdate, DashboardStats, WardHealth
 from app.auth import verify_demo_auth
 from pydantic import BaseModel
@@ -37,6 +37,11 @@ from pydantic import BaseModel
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class TranslateRequest(BaseModel):
+    text: str
+    target_lang: str
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -74,6 +79,15 @@ def login(req: LoginRequest):
         return {"token": "demo-token"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
+def translate_issue_stub(text: str, source_lang: str, target_lang: str) -> str:
+    """
+    Mock stub for Translation Service.
+    TODO: Integrate with Google Cloud Translate API or AWS Translate.
+    """
+    if not text or source_lang == target_lang:
+        return text
+    return f"[MT] {text}"
+
 @app.post("/api/issues/upload", response_model=IssueResponse)
 async def upload_issue(
     file: UploadFile = File(...),
@@ -81,6 +95,7 @@ async def upload_issue(
     longitude: float = Form(...),
     address: str | None = Form(None),
     reporter_note: str | None = Form(None),
+    original_language: str = Form("en"),
     db: Session = Depends(get_db),
 ):
     """
@@ -109,13 +124,14 @@ async def upload_issue(
 
     priority = compute_priority_score(result.severity_score, failure_prob, age_days=0, report_count=1)
     department = get_department(result.issue_type)
-    ward = get_ward_for_location(latitude, longitude)
+    state, city, ward = get_location_details(latitude, longitude)
 
     # --- Duplicate Detection ---
     # Find existing unresolved issues of the same type
     existing_issues = db.query(Issue).filter(
         Issue.issue_type == result.issue_type,
-        Issue.status == "reported"
+        Issue.status == "reported",
+        Issue.city == city
     ).all()
     
     for ex_issue in existing_issues:
@@ -143,13 +159,16 @@ async def upload_issue(
         severity_label=result.severity_label,
         latitude=latitude,
         longitude=longitude,
+        state=state,
+        city=city,
         ward=ward,
         address=address,
+        reporter_note=reporter_note,
+        original_language=original_language,
         status="reported",
         priority_score=priority,
         assigned_department=department,
         failure_probability_30d=failure_prob,
-        reporter_note=reporter_note,
         report_count=1,
         created_at=now,
         updated_at=now,
@@ -165,17 +184,26 @@ async def upload_issue(
 def list_issues(
     status: str | None = None,
     issue_type: str | None = None,
+    state: str | None = None,
+    city: str | None = None,
     ward: str | None = None,
+    search: str | None = None,
+    lang: str = "en",
     sort_by_priority: bool = True,
     db: Session = Depends(get_db),
     auth: bool = Depends(verify_demo_auth)
 ):
-    """Government dashboard: list/filter issues, sorted by priority by default."""
+    """Government dashboard: list/filter issues, sorted by priority by default.
+       If search is provided, it mocks translating the search query across all languages."""
     query = db.query(Issue)
     if status:
         query = query.filter(Issue.status == status)
     if issue_type:
         query = query.filter(Issue.issue_type == issue_type)
+    if state:
+        query = query.filter(Issue.state == state)
+    if city:
+        query = query.filter(Issue.city == city)
     if ward:
         query = query.filter(Issue.ward == ward)
 
@@ -184,7 +212,27 @@ def list_issues(
     else:
         query = query.order_by(Issue.created_at.desc())
 
-    return query.all()
+    issues = query.all()
+    
+    # Apply search filter manually to demonstrate the architecture 
+    # (Citizen submits in Language A, Official searches in Language B)
+    if search:
+        filtered_issues = []
+        for issue in issues:
+            if issue.reporter_note:
+                # We "translate" the official's search query into the issue's original language to check for a match.
+                # In a real app, either issues are pre-translated, or semantic search is used.
+                translated_search = translate_issue_stub(search, lang, issue.original_language)
+                if translated_search.lower() in issue.reporter_note.lower():
+                    filtered_issues.append(issue)
+        issues = filtered_issues
+
+    # Translate notes into official's display language
+    for issue in issues:
+        if issue.reporter_note:
+            issue.reporter_note = translate_issue_stub(issue.reporter_note, issue.original_language, lang)
+
+    return issues
 
 
 @app.get("/api/issues/{issue_id}", response_model=IssueResponse)
@@ -241,9 +289,14 @@ def update_issue_status(
 
 
 @app.get("/api/dashboard/stats", response_model=DashboardStats)
-def dashboard_stats(db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
+def dashboard_stats(state: str | None = None, city: str | None = None, db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
     """Aggregate stats for the government dashboard cards/charts."""
-    issues = db.query(Issue).all()
+    query = db.query(Issue)
+    if state:
+        query = query.filter(Issue.state == state)
+    if city:
+        query = query.filter(Issue.city == city)
+    issues = query.all()
     total = len(issues)
 
     if total == 0:
@@ -265,7 +318,8 @@ def dashboard_stats(db: Session = Depends(get_db), auth: bool = Depends(verify_d
     by_ward = {}
     for i in issues:
         if i.ward:
-            by_ward[i.ward] = by_ward.get(i.ward, 0) + 1
+            key = f"{i.city} - {i.ward}" if i.city else str(i.ward)
+            by_ward[key] = by_ward.get(key, 0) + 1
 
     avg_severity = round(sum(i.severity_score for i in issues) / total, 1)
     avg_fail_prob = round(sum((i.failure_probability_30d or 0) for i in issues) / total, 1)
@@ -286,31 +340,38 @@ def dashboard_stats(db: Session = Depends(get_db), auth: bool = Depends(verify_d
 
 
 @app.get("/api/dashboard/ward-health", response_model=list[WardHealth])
-def ward_health(db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
+def ward_health(state: str | None = None, city: str | None = None, db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
     """Per-ward Infrastructure Health Index — powers the map heat-coloring."""
     results = []
-    for ward in WARDS:
-        issues = db.query(Issue).filter(Issue.ward == ward).all()
+    for s, c, w in get_all_wards():
+        if state and s != state: continue
+        if city and c != city: continue
+        
+        issues = db.query(Issue).filter(Issue.state == s, Issue.city == c, Issue.ward == w).all()
         if not issues:
-            results.append(WardHealth(ward=ward, health_index=100.0, total_issues=0, critical_issues=0))
+            results.append(WardHealth(state=s, city=c, ward=w, health_index=100.0, total_issues=0, critical_issues=0))
             continue
         health = compute_ward_health_index(issues)
         critical = sum(1 for i in issues if i.severity_label == "Critical")
-        results.append(WardHealth(ward=ward, health_index=health, total_issues=len(issues), critical_issues=critical))
+        results.append(WardHealth(state=s, city=c, ward=w, health_index=health, total_issues=len(issues), critical_issues=critical))
     return results
 
 @app.get("/api/dashboard/export/{ward}")
-def export_ward_csv(ward: str, db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
+def export_ward_csv(ward: str, city: str | None = None, db: Session = Depends(get_db), auth: bool = Depends(verify_demo_auth)):
     """Export ward issues as CSV."""
     from fastapi.responses import StreamingResponse
     import io
     import csv
 
     # Match exact ward string or "all"
-    if ward.lower() == "all":
-        issues = db.query(Issue).all()
-    else:
-        issues = db.query(Issue).filter(Issue.ward == ward).all()
+    query = db.query(Issue)
+    if city:
+        query = query.filter(Issue.city == city)
+        
+    if ward.lower() != "all":
+        query = query.filter(Issue.ward == ward)
+        
+    issues = query.all()
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -345,6 +406,8 @@ def export_ward_csv(ward: str, db: Session = Depends(get_db), auth: bool = Depen
 def dashboard_forecast(
     days: int = 90, 
     resolve_top_n: int = 10, 
+    state: str | None = None,
+    city: str | None = None,
     ward: str | None = None,
     db: Session = Depends(get_db), 
     auth: bool = Depends(verify_demo_auth)
@@ -356,6 +419,10 @@ def dashboard_forecast(
     from app.prediction import forecast_health_index
     
     query = db.query(Issue)
+    if state:
+        query = query.filter(Issue.state == state)
+    if city:
+        query = query.filter(Issue.city == city)
     if ward:
         query = query.filter(Issue.ward == ward)
     
@@ -375,54 +442,29 @@ def list_contractors(db: Session = Depends(get_db), auth: bool = Depends(verify_
     return db.query(Contractor).order_by(Contractor.performance_score.desc()).all()
 
 
-@app.post("/api/seed-demo-data")
-def seed_demo_data(db: Session = Depends(get_db)):
+@app.post('/api/translate')
+def translate_text(req: TranslateRequest):
+    """Server-side translation endpoint using Google Cloud Translate (v2 wrapper).
+
+    Setup:
+      - Install dependency: `pip install google-cloud-translate`
+      - Enable Cloud Translation API in Google Cloud project.
+      - Create a service account, download JSON key, set env var:
+          `GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json`
     """
-    Convenience endpoint for hackathon demos: populates the DB with
-    realistic-looking sample issues so the dashboard/map aren't empty
-    when judges look at it. NOT for production use.
-    """
-    import random as _r
+    try:
+        from google.cloud import translate_v2 as translate
+    except Exception:
+        raise HTTPException(status_code=500, detail=(
+            "Translation client not available. Ensure `google-cloud-translate` is installed "
+            "and the environment variable GOOGLE_APPLICATION_CREDENTIALS is configured."))
 
-    sample_types = list(["pothole", "garbage", "waterlogging", "streetlight", "drainage"])
-    base_lat, base_lng = 30.9010, 75.8573  # Ludhiana, matches investor deck's pilot city
+    client = translate.Client()
+    try:
+        resp = client.translate(req.text, target_language=req.target_lang)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {e}")
 
-    created = []
-    for _ in range(25):
-        issue_type = _r.choice(sample_types)
-        severity = round(_r.uniform(20, 95), 1)
-        from app.detection import severity_to_label
-        label = severity_to_label(severity)
-        now = datetime.now(timezone.utc)
-        fail_prob = predict_failure_probability(issue_type, severity, now)
-        priority = compute_priority_score(severity, fail_prob, age_days=_r.randint(0, 20), report_count=1)
+    return {"translatedText": resp.get('translatedText'), "detectedSource": resp.get('detectedSourceLanguage')}
 
-        issue = Issue(
-            image_path="/uploads/demo_placeholder.jpg",
-            issue_type=issue_type,
-            confidence=round(_r.uniform(0.6, 0.95), 2),
-            severity_score=severity,
-            severity_label=label,
-            latitude=base_lat + _r.uniform(-0.05, 0.05),
-            longitude=base_lng + _r.uniform(-0.05, 0.05),
-            ward=_r.choice(WARDS),
-            address="Sample demo location",
-            status=_r.choice(["reported", "in_progress", "resolved"]),
-            priority_score=priority,
-            assigned_department=get_department(issue_type),
-            failure_probability_30d=fail_prob,
-            report_count=1,
-            created_at=now,
-            updated_at=now,
-        )
-        db.add(issue)
-        created.append(issue_type)
 
-    if db.query(Contractor).count() == 0:
-        c1 = Contractor(name="Alpha Build Co.", issues_assigned=10, issues_resolved=8, performance_score=80.0)
-        c2 = Contractor(name="Ludhiana Roads Ltd.", issues_assigned=15, issues_resolved=14, performance_score=93.3)
-        c3 = Contractor(name="Municipal Works Dept", issues_assigned=5, issues_resolved=2, performance_score=40.0)
-        db.add_all([c1, c2, c3])
-
-    db.commit()
-    return {"message": f"Seeded {len(created)} demo issues."}

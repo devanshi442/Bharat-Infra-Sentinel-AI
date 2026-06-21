@@ -1,0 +1,1038 @@
+{
+  "Maharashtra": {
+    "Mumbai": {
+      "center": [
+        19.076,
+        72.8777
+      ],
+      "wards": [
+        {
+          "name": "Mumbai - North-West Zone",
+          "min_lat": 19.076,
+          "max_lat": 19.126,
+          "min_lng": 72.82770000000001,
+          "max_lng": 72.8777
+        },
+        {
+          "name": "Mumbai - North-East Zone",
+          "min_lat": 19.076,
+          "max_lat": 19.126,
+          "min_lng": 72.8777,
+          "max_lng": 72.9277
+        },
+        {
+          "name": "Mumbai - South-West Zone",
+          "min_lat": 19.026,
+          "max_lat": 19.076,
+          "min_lng": 72.82770000000001,
+          "max_lng": 72.8777
+        },
+        {
+          "name": "Mumbai - South-East Zone",
+          "min_lat": 19.026,
+          "max_lat": 19.076,
+          "min_lng": 72.8777,
+          "max_lng": 72.9277
+        }
+      ]
+    },
+    "Pune": {
+      "center": [
+        18.5204,
+        73.8567
+      ],
+      "wards": [
+        {
+          "name": "Pune - North-West Zone",
+          "min_lat": 18.5204,
+          "max_lat": 18.5704,
+          "min_lng": 73.8067,
+          "max_lng": 73.8567
+        },
+        {
+          "name": "Pune - North-East Zone",
+          "min_lat": 18.5204,
+          "max_lat": 18.5704,
+          "min_lng": 73.8567,
+          "max_lng": 73.9067
+        },
+        {
+          "name": "Pune - South-West Zone",
+          "min_lat": 18.470399999999998,
+          "max_lat": 18.5204,
+          "min_lng": 73.8067,
+          "max_lng": 73.8567
+        },
+        {
+          "name": "Pune - South-East Zone",
+          "min_lat": 18.470399999999998,
+          "max_lat": 18.5204,
+          "min_lng": 73.8567,
+          "max_lng": 73.9067
+        }
+      ]
+    },
+    "Nagpur": {
+      "center": [
+        21.1458,
+        79.0882
+      ],
+      "wards": [
+        {
+          "name": "Nagpur - North-West Zone",
+          "min_lat": 21.1458,
+          "max_lat": 21.195800000000002,
+          "min_lng": 79.0382,
+          "max_lng": 79.0882
+        },
+        {
+          "name": "Nagpur - North-East Zone",
+          "min_lat": 21.1458,
+          "max_lat": 21.195800000000002,
+          "min_lng": 79.0882,
+          "max_lng": 79.1382
+        },
+        {
+          "name": "Nagpur - South-West Zone",
+          "min_lat": 21.0958,
+          "max_lat": 21.1458,
+          "min_lng": 79.0382,
+          "max_lng": 79.0882
+        },
+        {
+          "name": "Nagpur - South-East Zone",
+          "min_lat": 21.0958,
+          "max_lat": 21.1458,
+          "min_lng": 79.0882,
+          "max_lng": 79.1382
+        }
+      ]
+    }
+  },
+  "Uttar Pradesh": {
+    "Lucknow": {
+      "center": [
+        26.8467,
+        80.9462
+      ],
+      "wards": [
+        {
+          "name": "Lucknow - North-West Zone",
+          "min_lat": 26.8467,
+          "max_lat": 26.8967,
+          "min_lng": 80.89620000000001,
+          "max_lng": 80.9462
+        },
+        {
+          "name": "Lucknow - North-East Zone",
+          "min_lat": 26.8467,
+          "max_lat": 26.8967,
+          "min_lng": 80.9462,
+          "max_lng": 80.9962
+        },
+        {
+          "name": "Lucknow - South-West Zone",
+          "min_lat": 26.796699999999998,
+          "max_lat": 26.8467,
+          "min_lng": 80.89620000000001,
+          "max_lng": 80.9462
+        },
+        {
+          "name": "Lucknow - South-East Zone",
+          "min_lat": 26.796699999999998,
+          "max_lat": 26.8467,
+          "min_lng": 80.9462,
+          "max_lng": 80.9962
+        }
+      ]
+    },
+    "Kanpur": {
+      "center": [
+        26.4499,
+        80.3319
+      ],
+      "wards": [
+        {
+          "name": "Kanpur - North-West Zone",
+          "min_lat": 26.4499,
+          "max_lat": 26.4999,
+          "min_lng": 80.28190000000001,
+          "max_lng": 80.3319
+        },
+        {
+          "name": "Kanpur - North-East Zone",
+          "min_lat": 26.4499,
+          "max_lat": 26.4999,
+          "min_lng": 80.3319,
+          "max_lng": 80.3819
+        },
+        {
+          "name": "Kanpur - South-West Zone",
+          "min_lat": 26.3999,
+          "max_lat": 26.4499,
+          "min_lng": 80.28190000000001,
+          "max_lng": 80.3319
+        },
+        {
+          "name": "Kanpur - South-East Zone",
+          "min_lat": 26.3999,
+          "max_lat": 26.4499,
+          "min_lng": 80.3319,
+          "max_lng": 80.3819
+        }
+      ]
+    },
+    "Varanasi": {
+      "center": [
+        25.3176,
+        82.9739
+      ],
+      "wards": [
+        {
+          "name": "Varanasi - North-West Zone",
+          "min_lat": 25.3176,
+          "max_lat": 25.3676,
+          "min_lng": 82.9239,
+          "max_lng": 82.9739
+        },
+        {
+          "name": "Varanasi - North-East Zone",
+          "min_lat": 25.3176,
+          "max_lat": 25.3676,
+          "min_lng": 82.9739,
+          "max_lng": 83.0239
+        },
+        {
+          "name": "Varanasi - South-West Zone",
+          "min_lat": 25.267599999999998,
+          "max_lat": 25.3176,
+          "min_lng": 82.9239,
+          "max_lng": 82.9739
+        },
+        {
+          "name": "Varanasi - South-East Zone",
+          "min_lat": 25.267599999999998,
+          "max_lat": 25.3176,
+          "min_lng": 82.9739,
+          "max_lng": 83.0239
+        }
+      ]
+    }
+  },
+  "Bihar": {
+    "Patna": {
+      "center": [
+        25.5941,
+        85.1376
+      ],
+      "wards": [
+        {
+          "name": "Patna - North-West Zone",
+          "min_lat": 25.5941,
+          "max_lat": 25.6441,
+          "min_lng": 85.08760000000001,
+          "max_lng": 85.1376
+        },
+        {
+          "name": "Patna - North-East Zone",
+          "min_lat": 25.5941,
+          "max_lat": 25.6441,
+          "min_lng": 85.1376,
+          "max_lng": 85.1876
+        },
+        {
+          "name": "Patna - South-West Zone",
+          "min_lat": 25.5441,
+          "max_lat": 25.5941,
+          "min_lng": 85.08760000000001,
+          "max_lng": 85.1376
+        },
+        {
+          "name": "Patna - South-East Zone",
+          "min_lat": 25.5441,
+          "max_lat": 25.5941,
+          "min_lng": 85.1376,
+          "max_lng": 85.1876
+        }
+      ]
+    },
+    "Gaya": {
+      "center": [
+        24.7955,
+        85.0002
+      ],
+      "wards": [
+        {
+          "name": "Gaya - North-West Zone",
+          "min_lat": 24.7955,
+          "max_lat": 24.8455,
+          "min_lng": 84.95020000000001,
+          "max_lng": 85.0002
+        },
+        {
+          "name": "Gaya - North-East Zone",
+          "min_lat": 24.7955,
+          "max_lat": 24.8455,
+          "min_lng": 85.0002,
+          "max_lng": 85.0502
+        },
+        {
+          "name": "Gaya - South-West Zone",
+          "min_lat": 24.7455,
+          "max_lat": 24.7955,
+          "min_lng": 84.95020000000001,
+          "max_lng": 85.0002
+        },
+        {
+          "name": "Gaya - South-East Zone",
+          "min_lat": 24.7455,
+          "max_lat": 24.7955,
+          "min_lng": 85.0002,
+          "max_lng": 85.0502
+        }
+      ]
+    }
+  },
+  "West Bengal": {
+    "Kolkata": {
+      "center": [
+        22.5726,
+        88.3639
+      ],
+      "wards": [
+        {
+          "name": "Kolkata - North-West Zone",
+          "min_lat": 22.5726,
+          "max_lat": 22.622600000000002,
+          "min_lng": 88.3139,
+          "max_lng": 88.3639
+        },
+        {
+          "name": "Kolkata - North-East Zone",
+          "min_lat": 22.5726,
+          "max_lat": 22.622600000000002,
+          "min_lng": 88.3639,
+          "max_lng": 88.4139
+        },
+        {
+          "name": "Kolkata - South-West Zone",
+          "min_lat": 22.5226,
+          "max_lat": 22.5726,
+          "min_lng": 88.3139,
+          "max_lng": 88.3639
+        },
+        {
+          "name": "Kolkata - South-East Zone",
+          "min_lat": 22.5226,
+          "max_lat": 22.5726,
+          "min_lng": 88.3639,
+          "max_lng": 88.4139
+        }
+      ]
+    },
+    "Howrah": {
+      "center": [
+        22.5958,
+        88.2636
+      ],
+      "wards": [
+        {
+          "name": "Howrah - North-West Zone",
+          "min_lat": 22.5958,
+          "max_lat": 22.6458,
+          "min_lng": 88.2136,
+          "max_lng": 88.2636
+        },
+        {
+          "name": "Howrah - North-East Zone",
+          "min_lat": 22.5958,
+          "max_lat": 22.6458,
+          "min_lng": 88.2636,
+          "max_lng": 88.3136
+        },
+        {
+          "name": "Howrah - South-West Zone",
+          "min_lat": 22.5458,
+          "max_lat": 22.5958,
+          "min_lng": 88.2136,
+          "max_lng": 88.2636
+        },
+        {
+          "name": "Howrah - South-East Zone",
+          "min_lat": 22.5458,
+          "max_lat": 22.5958,
+          "min_lng": 88.2636,
+          "max_lng": 88.3136
+        }
+      ]
+    }
+  },
+  "Tamil Nadu": {
+    "Chennai": {
+      "center": [
+        13.0827,
+        80.2707
+      ],
+      "wards": [
+        {
+          "name": "Chennai - North-West Zone",
+          "min_lat": 13.0827,
+          "max_lat": 13.132700000000002,
+          "min_lng": 80.22070000000001,
+          "max_lng": 80.2707
+        },
+        {
+          "name": "Chennai - North-East Zone",
+          "min_lat": 13.0827,
+          "max_lat": 13.132700000000002,
+          "min_lng": 80.2707,
+          "max_lng": 80.3207
+        },
+        {
+          "name": "Chennai - South-West Zone",
+          "min_lat": 13.0327,
+          "max_lat": 13.0827,
+          "min_lng": 80.22070000000001,
+          "max_lng": 80.2707
+        },
+        {
+          "name": "Chennai - South-East Zone",
+          "min_lat": 13.0327,
+          "max_lat": 13.0827,
+          "min_lng": 80.2707,
+          "max_lng": 80.3207
+        }
+      ]
+    },
+    "Coimbatore": {
+      "center": [
+        11.0168,
+        76.9558
+      ],
+      "wards": [
+        {
+          "name": "Coimbatore - North-West Zone",
+          "min_lat": 11.0168,
+          "max_lat": 11.0668,
+          "min_lng": 76.9058,
+          "max_lng": 76.9558
+        },
+        {
+          "name": "Coimbatore - North-East Zone",
+          "min_lat": 11.0168,
+          "max_lat": 11.0668,
+          "min_lng": 76.9558,
+          "max_lng": 77.0058
+        },
+        {
+          "name": "Coimbatore - South-West Zone",
+          "min_lat": 10.9668,
+          "max_lat": 11.0168,
+          "min_lng": 76.9058,
+          "max_lng": 76.9558
+        },
+        {
+          "name": "Coimbatore - South-East Zone",
+          "min_lat": 10.9668,
+          "max_lat": 11.0168,
+          "min_lng": 76.9558,
+          "max_lng": 77.0058
+        }
+      ]
+    },
+    "Madurai": {
+      "center": [
+        9.9252,
+        78.1198
+      ],
+      "wards": [
+        {
+          "name": "Madurai - North-West Zone",
+          "min_lat": 9.9252,
+          "max_lat": 9.975200000000001,
+          "min_lng": 78.0698,
+          "max_lng": 78.1198
+        },
+        {
+          "name": "Madurai - North-East Zone",
+          "min_lat": 9.9252,
+          "max_lat": 9.975200000000001,
+          "min_lng": 78.1198,
+          "max_lng": 78.1698
+        },
+        {
+          "name": "Madurai - South-West Zone",
+          "min_lat": 9.8752,
+          "max_lat": 9.9252,
+          "min_lng": 78.0698,
+          "max_lng": 78.1198
+        },
+        {
+          "name": "Madurai - South-East Zone",
+          "min_lat": 9.8752,
+          "max_lat": 9.9252,
+          "min_lng": 78.1198,
+          "max_lng": 78.1698
+        }
+      ]
+    }
+  },
+  "Punjab": {
+    "Ludhiana": {
+      "center": [
+        30.901,
+        75.8573
+      ],
+      "wards": [
+        {
+          "name": "Ludhiana - North-West Zone",
+          "min_lat": 30.901,
+          "max_lat": 30.951,
+          "min_lng": 75.8073,
+          "max_lng": 75.8573
+        },
+        {
+          "name": "Ludhiana - North-East Zone",
+          "min_lat": 30.901,
+          "max_lat": 30.951,
+          "min_lng": 75.8573,
+          "max_lng": 75.90729999999999
+        },
+        {
+          "name": "Ludhiana - South-West Zone",
+          "min_lat": 30.851,
+          "max_lat": 30.901,
+          "min_lng": 75.8073,
+          "max_lng": 75.8573
+        },
+        {
+          "name": "Ludhiana - South-East Zone",
+          "min_lat": 30.851,
+          "max_lat": 30.901,
+          "min_lng": 75.8573,
+          "max_lng": 75.90729999999999
+        }
+      ]
+    },
+    "Amritsar": {
+      "center": [
+        31.634,
+        74.8723
+      ],
+      "wards": [
+        {
+          "name": "Amritsar - North-West Zone",
+          "min_lat": 31.634,
+          "max_lat": 31.684,
+          "min_lng": 74.8223,
+          "max_lng": 74.8723
+        },
+        {
+          "name": "Amritsar - North-East Zone",
+          "min_lat": 31.634,
+          "max_lat": 31.684,
+          "min_lng": 74.8723,
+          "max_lng": 74.92229999999999
+        },
+        {
+          "name": "Amritsar - South-West Zone",
+          "min_lat": 31.584,
+          "max_lat": 31.634,
+          "min_lng": 74.8223,
+          "max_lng": 74.8723
+        },
+        {
+          "name": "Amritsar - South-East Zone",
+          "min_lat": 31.584,
+          "max_lat": 31.634,
+          "min_lng": 74.8723,
+          "max_lng": 74.92229999999999
+        }
+      ]
+    }
+  },
+  "Delhi": {
+    "New Delhi": {
+      "center": [
+        28.6139,
+        77.209
+      ],
+      "wards": [
+        {
+          "name": "New Delhi - North-West Zone",
+          "min_lat": 28.6139,
+          "max_lat": 28.6639,
+          "min_lng": 77.159,
+          "max_lng": 77.209
+        },
+        {
+          "name": "New Delhi - North-East Zone",
+          "min_lat": 28.6139,
+          "max_lat": 28.6639,
+          "min_lng": 77.209,
+          "max_lng": 77.259
+        },
+        {
+          "name": "New Delhi - South-West Zone",
+          "min_lat": 28.5639,
+          "max_lat": 28.6139,
+          "min_lng": 77.159,
+          "max_lng": 77.209
+        },
+        {
+          "name": "New Delhi - South-East Zone",
+          "min_lat": 28.5639,
+          "max_lat": 28.6139,
+          "min_lng": 77.209,
+          "max_lng": 77.259
+        }
+      ]
+    }
+  },
+  "Karnataka": {
+    "Bengaluru": {
+      "center": [
+        12.9716,
+        77.5946
+      ],
+      "wards": [
+        {
+          "name": "Bengaluru - North-West Zone",
+          "min_lat": 12.9716,
+          "max_lat": 13.021600000000001,
+          "min_lng": 77.5446,
+          "max_lng": 77.5946
+        },
+        {
+          "name": "Bengaluru - North-East Zone",
+          "min_lat": 12.9716,
+          "max_lat": 13.021600000000001,
+          "min_lng": 77.5946,
+          "max_lng": 77.6446
+        },
+        {
+          "name": "Bengaluru - South-West Zone",
+          "min_lat": 12.9216,
+          "max_lat": 12.9716,
+          "min_lng": 77.5446,
+          "max_lng": 77.5946
+        },
+        {
+          "name": "Bengaluru - South-East Zone",
+          "min_lat": 12.9216,
+          "max_lat": 12.9716,
+          "min_lng": 77.5946,
+          "max_lng": 77.6446
+        }
+      ]
+    },
+    "Mysuru": {
+      "center": [
+        12.2958,
+        76.6394
+      ],
+      "wards": [
+        {
+          "name": "Mysuru - North-West Zone",
+          "min_lat": 12.2958,
+          "max_lat": 12.3458,
+          "min_lng": 76.5894,
+          "max_lng": 76.6394
+        },
+        {
+          "name": "Mysuru - North-East Zone",
+          "min_lat": 12.2958,
+          "max_lat": 12.3458,
+          "min_lng": 76.6394,
+          "max_lng": 76.68939999999999
+        },
+        {
+          "name": "Mysuru - South-West Zone",
+          "min_lat": 12.2458,
+          "max_lat": 12.2958,
+          "min_lng": 76.5894,
+          "max_lng": 76.6394
+        },
+        {
+          "name": "Mysuru - South-East Zone",
+          "min_lat": 12.2458,
+          "max_lat": 12.2958,
+          "min_lng": 76.6394,
+          "max_lng": 76.68939999999999
+        }
+      ]
+    }
+  },
+  "Gujarat": {
+    "Ahmedabad": {
+      "center": [
+        23.0225,
+        72.5714
+      ],
+      "wards": [
+        {
+          "name": "Ahmedabad - North-West Zone",
+          "min_lat": 23.0225,
+          "max_lat": 23.0725,
+          "min_lng": 72.5214,
+          "max_lng": 72.5714
+        },
+        {
+          "name": "Ahmedabad - North-East Zone",
+          "min_lat": 23.0225,
+          "max_lat": 23.0725,
+          "min_lng": 72.5714,
+          "max_lng": 72.6214
+        },
+        {
+          "name": "Ahmedabad - South-West Zone",
+          "min_lat": 22.9725,
+          "max_lat": 23.0225,
+          "min_lng": 72.5214,
+          "max_lng": 72.5714
+        },
+        {
+          "name": "Ahmedabad - South-East Zone",
+          "min_lat": 22.9725,
+          "max_lat": 23.0225,
+          "min_lng": 72.5714,
+          "max_lng": 72.6214
+        }
+      ]
+    },
+    "Surat": {
+      "center": [
+        21.1702,
+        72.8311
+      ],
+      "wards": [
+        {
+          "name": "Surat - North-West Zone",
+          "min_lat": 21.1702,
+          "max_lat": 21.220200000000002,
+          "min_lng": 72.78110000000001,
+          "max_lng": 72.8311
+        },
+        {
+          "name": "Surat - North-East Zone",
+          "min_lat": 21.1702,
+          "max_lat": 21.220200000000002,
+          "min_lng": 72.8311,
+          "max_lng": 72.8811
+        },
+        {
+          "name": "Surat - South-West Zone",
+          "min_lat": 21.1202,
+          "max_lat": 21.1702,
+          "min_lng": 72.78110000000001,
+          "max_lng": 72.8311
+        },
+        {
+          "name": "Surat - South-East Zone",
+          "min_lat": 21.1202,
+          "max_lat": 21.1702,
+          "min_lng": 72.8311,
+          "max_lng": 72.8811
+        }
+      ]
+    }
+  },
+  "Rajasthan": {
+    "Jaipur": {
+      "center": [
+        26.9124,
+        75.7873
+      ],
+      "wards": [
+        {
+          "name": "Jaipur - North-West Zone",
+          "min_lat": 26.9124,
+          "max_lat": 26.962400000000002,
+          "min_lng": 75.7373,
+          "max_lng": 75.7873
+        },
+        {
+          "name": "Jaipur - North-East Zone",
+          "min_lat": 26.9124,
+          "max_lat": 26.962400000000002,
+          "min_lng": 75.7873,
+          "max_lng": 75.8373
+        },
+        {
+          "name": "Jaipur - South-West Zone",
+          "min_lat": 26.8624,
+          "max_lat": 26.9124,
+          "min_lng": 75.7373,
+          "max_lng": 75.7873
+        },
+        {
+          "name": "Jaipur - South-East Zone",
+          "min_lat": 26.8624,
+          "max_lat": 26.9124,
+          "min_lng": 75.7873,
+          "max_lng": 75.8373
+        }
+      ]
+    },
+    "Jodhpur": {
+      "center": [
+        26.2389,
+        73.0243
+      ],
+      "wards": [
+        {
+          "name": "Jodhpur - North-West Zone",
+          "min_lat": 26.2389,
+          "max_lat": 26.2889,
+          "min_lng": 72.9743,
+          "max_lng": 73.0243
+        },
+        {
+          "name": "Jodhpur - North-East Zone",
+          "min_lat": 26.2389,
+          "max_lat": 26.2889,
+          "min_lng": 73.0243,
+          "max_lng": 73.0743
+        },
+        {
+          "name": "Jodhpur - South-West Zone",
+          "min_lat": 26.1889,
+          "max_lat": 26.2389,
+          "min_lng": 72.9743,
+          "max_lng": 73.0243
+        },
+        {
+          "name": "Jodhpur - South-East Zone",
+          "min_lat": 26.1889,
+          "max_lat": 26.2389,
+          "min_lng": 73.0243,
+          "max_lng": 73.0743
+        }
+      ]
+    }
+  },
+  "Andhra Pradesh": {
+    "Visakhapatnam": {
+      "center": [
+        17.6868,
+        83.2185
+      ],
+      "wards": [
+        {
+          "name": "Visakhapatnam - North-West Zone",
+          "min_lat": 17.6868,
+          "max_lat": 17.736800000000002,
+          "min_lng": 83.16850000000001,
+          "max_lng": 83.2185
+        },
+        {
+          "name": "Visakhapatnam - North-East Zone",
+          "min_lat": 17.6868,
+          "max_lat": 17.736800000000002,
+          "min_lng": 83.2185,
+          "max_lng": 83.2685
+        },
+        {
+          "name": "Visakhapatnam - South-West Zone",
+          "min_lat": 17.6368,
+          "max_lat": 17.6868,
+          "min_lng": 83.16850000000001,
+          "max_lng": 83.2185
+        },
+        {
+          "name": "Visakhapatnam - South-East Zone",
+          "min_lat": 17.6368,
+          "max_lat": 17.6868,
+          "min_lng": 83.2185,
+          "max_lng": 83.2685
+        }
+      ]
+    }
+  },
+  "Telangana": {
+    "Hyderabad": {
+      "center": [
+        17.385,
+        78.4867
+      ],
+      "wards": [
+        {
+          "name": "Hyderabad - North-West Zone",
+          "min_lat": 17.385,
+          "max_lat": 17.435000000000002,
+          "min_lng": 78.4367,
+          "max_lng": 78.4867
+        },
+        {
+          "name": "Hyderabad - North-East Zone",
+          "min_lat": 17.385,
+          "max_lat": 17.435000000000002,
+          "min_lng": 78.4867,
+          "max_lng": 78.5367
+        },
+        {
+          "name": "Hyderabad - South-West Zone",
+          "min_lat": 17.335,
+          "max_lat": 17.385,
+          "min_lng": 78.4367,
+          "max_lng": 78.4867
+        },
+        {
+          "name": "Hyderabad - South-East Zone",
+          "min_lat": 17.335,
+          "max_lat": 17.385,
+          "min_lng": 78.4867,
+          "max_lng": 78.5367
+        }
+      ]
+    }
+  },
+  "Kerala": {
+    "Thiruvananthapuram": {
+      "center": [
+        8.5241,
+        76.9366
+      ],
+      "wards": [
+        {
+          "name": "Thiruvananthapuram - North-West Zone",
+          "min_lat": 8.5241,
+          "max_lat": 8.574100000000001,
+          "min_lng": 76.8866,
+          "max_lng": 76.9366
+        },
+        {
+          "name": "Thiruvananthapuram - North-East Zone",
+          "min_lat": 8.5241,
+          "max_lat": 8.574100000000001,
+          "min_lng": 76.9366,
+          "max_lng": 76.9866
+        },
+        {
+          "name": "Thiruvananthapuram - South-West Zone",
+          "min_lat": 8.4741,
+          "max_lat": 8.5241,
+          "min_lng": 76.8866,
+          "max_lng": 76.9366
+        },
+        {
+          "name": "Thiruvananthapuram - South-East Zone",
+          "min_lat": 8.4741,
+          "max_lat": 8.5241,
+          "min_lng": 76.9366,
+          "max_lng": 76.9866
+        }
+      ]
+    },
+    "Kochi": {
+      "center": [
+        9.9312,
+        76.2673
+      ],
+      "wards": [
+        {
+          "name": "Kochi - North-West Zone",
+          "min_lat": 9.9312,
+          "max_lat": 9.981200000000001,
+          "min_lng": 76.21730000000001,
+          "max_lng": 76.2673
+        },
+        {
+          "name": "Kochi - North-East Zone",
+          "min_lat": 9.9312,
+          "max_lat": 9.981200000000001,
+          "min_lng": 76.2673,
+          "max_lng": 76.3173
+        },
+        {
+          "name": "Kochi - South-West Zone",
+          "min_lat": 9.8812,
+          "max_lat": 9.9312,
+          "min_lng": 76.21730000000001,
+          "max_lng": 76.2673
+        },
+        {
+          "name": "Kochi - South-East Zone",
+          "min_lat": 9.8812,
+          "max_lat": 9.9312,
+          "min_lng": 76.2673,
+          "max_lng": 76.3173
+        }
+      ]
+    }
+  },
+  "Madhya Pradesh": {
+    "Bhopal": {
+      "center": [
+        23.2599,
+        77.4126
+      ],
+      "wards": [
+        {
+          "name": "Bhopal - North-West Zone",
+          "min_lat": 23.2599,
+          "max_lat": 23.3099,
+          "min_lng": 77.3626,
+          "max_lng": 77.4126
+        },
+        {
+          "name": "Bhopal - North-East Zone",
+          "min_lat": 23.2599,
+          "max_lat": 23.3099,
+          "min_lng": 77.4126,
+          "max_lng": 77.4626
+        },
+        {
+          "name": "Bhopal - South-West Zone",
+          "min_lat": 23.209899999999998,
+          "max_lat": 23.2599,
+          "min_lng": 77.3626,
+          "max_lng": 77.4126
+        },
+        {
+          "name": "Bhopal - South-East Zone",
+          "min_lat": 23.209899999999998,
+          "max_lat": 23.2599,
+          "min_lng": 77.4126,
+          "max_lng": 77.4626
+        }
+      ]
+    },
+    "Indore": {
+      "center": [
+        22.7196,
+        75.8577
+      ],
+      "wards": [
+        {
+          "name": "Indore - North-West Zone",
+          "min_lat": 22.7196,
+          "max_lat": 22.7696,
+          "min_lng": 75.8077,
+          "max_lng": 75.8577
+        },
+        {
+          "name": "Indore - North-East Zone",
+          "min_lat": 22.7196,
+          "max_lat": 22.7696,
+          "min_lng": 75.8577,
+          "max_lng": 75.90769999999999
+        },
+        {
+          "name": "Indore - South-West Zone",
+          "min_lat": 22.6696,
+          "max_lat": 22.7196,
+          "min_lng": 75.8077,
+          "max_lng": 75.8577
+        },
+        {
+          "name": "Indore - South-East Zone",
+          "min_lat": 22.6696,
+          "max_lat": 22.7196,
+          "min_lng": 75.8577,
+          "max_lng": 75.90769999999999
+        }
+      ]
+    }
+  }
+}

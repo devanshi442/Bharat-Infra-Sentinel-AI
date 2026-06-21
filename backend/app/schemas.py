@@ -12,6 +12,8 @@ class IssueResponse(BaseModel):
     severity_label: str
     latitude: float
     longitude: float
+    state: Optional[str] = None
+    city: Optional[str] = None
     ward: Optional[str] = None
     address: Optional[str] = None
     status: str
@@ -20,6 +22,7 @@ class IssueResponse(BaseModel):
     contractor: Optional[str] = None
     failure_probability_30d: Optional[float] = None
     reporter_note: Optional[str] = None
+    original_language: str = "en"
     report_count: int = 1
     days_until_sla: Optional[int] = None
     sla_breach: Optional[bool] = None
@@ -49,6 +52,8 @@ class DashboardStats(BaseModel):
 
 
 class WardHealth(BaseModel):
+    state: str
+    city: str
     ward: str
     health_index: float
     total_issues: int

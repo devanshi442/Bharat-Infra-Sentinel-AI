@@ -30,8 +30,13 @@ class Issue(Base):
     # Location
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    state = Column(String, default="Punjab")
+    city = Column(String, default="Ludhiana")
     ward = Column(String, nullable=True)
     address = Column(String, nullable=True)
+    
+    reporter_note = Column(String, nullable=True)
+    original_language = Column(String, default="en")
 
     # Governance / workflow
     status = Column(String, default="reported")        # reported | in_progress | resolved

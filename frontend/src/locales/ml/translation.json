@@ -1,0 +1,19 @@
+{
+  "app_title": "ഭാരത് ഇൻഫ്രാ സെന്റിനൽ",
+  "report_issue": "പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക",
+  "dashboard": "ഡാഷ്‌ബോർഡ്",
+  "login": "ലോഗിൻ",
+  "upload_photo": "Upload Photo",
+  "location": "Location",
+  "voice_input": "Hold to Speak",
+  "submit": "Submit Report",
+  "priority_queue": "Priority Queue",
+  "ward_health": "Ward Health Index",
+  "failure_prob": "30-Day Failure Probability",
+  "status": "Status",
+  "severity": "Severity",
+  "resolved": "Resolved",
+  "in_progress": "In Progress",
+  "open": "Open",
+  "search_issues": "Search issues..."
+}

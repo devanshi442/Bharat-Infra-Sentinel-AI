@@ -1,0 +1,43 @@
+{
+  "app_title": "Bharat Infra Sentinel",
+  "report_issue": "Report Issue",
+  "dashboard": "Dashboard",
+  "login": "Login",
+  "upload_photo": "Upload Photo",
+  "location": "Location",
+  "voice_input": "Hold to Speak",
+  "submit": "Submit Report",
+  "priority_queue": "Priority Queue",
+  "ward_health": "Ward Health Index",
+  "failure_prob": "30-Day Failure Probability",
+  "status": "Status",
+  "severity": "Severity",
+  "resolved": "Resolved",
+  "in_progress": "In Progress",
+  "open": "Open",
+  "search_issues": "Search issues..."
+  ,"title": "Report an Issue"
+  ,"step1": "Step 1: Photo"
+  ,"step1Desc": "Take a clear photo of the problem so AI can identify it."
+  ,"changePhoto": "Change Photo"
+  ,"tapToUpload": "Tap to upload or take a photo"
+  ,"step2": "Step 2: Location"
+  ,"step2Desc": "Capture your location or pick it on the map."
+  ,"locating": "Detecting location..."
+  ,"useLocation": "Use my current location"
+  ,"landmark": "Add a nearby landmark (optional)"
+  ,"step3": "Step 3: Note"
+  ,"optional": "optional"
+  ,"listening": "Listening..."
+  ,"anythingElse": "Anything else to tell the officials?"
+  ,"photoRequired": "Please attach a photo of the issue."
+  ,"locationRequired": "Please capture your location."
+  ,"voiceNotSupported": "Voice input is not supported in this browser."
+  ,"analyzing": "Analyzing…"
+  ,"saved_offline": "Saved offline — will sync when connected."
+  ,"report_submitted": "Report submitted & analyzed"
+  ,"failure_risk_label": "30-day escalation risk"
+  ,"detection_confidence": "detection confidence"
+  ,"routed_to": "Routed to"
+  ,"report_visible_paragraph": "Your report (#{id}) is now visible on the municipal dashboard, ranked by priority score {score}."
+}

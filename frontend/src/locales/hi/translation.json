@@ -1,0 +1,43 @@
+{
+  "app_title": "भारत इन्फ्रा प्रहरी",
+  "report_issue": "समस्या दर्ज करें",
+  "dashboard": "डैशबोर्ड",
+  "login": "लॉग इन",
+  "upload_photo": "Upload Photo",
+  "location": "Location",
+  "voice_input": "Hold to Speak",
+  "submit": "Submit Report",
+  "priority_queue": "Priority Queue",
+  "ward_health": "Ward Health Index",
+  "failure_prob": "30-Day Failure Probability",
+  "status": "Status",
+  "severity": "Severity",
+  "resolved": "Resolved",
+  "in_progress": "In Progress",
+  "open": "Open",
+  "search_issues": "Search issues..."
+  ,"title": "समस्या दर्ज करें"
+  ,"step1": "चरण 1: फोटो"
+  ,"step1Desc": "समस्या की स्पष्ट तस्वीर लें ताकि AI उसे पहचान सके।"
+  ,"changePhoto": "फोटो बदलें"
+  ,"tapToUpload": "अपलोड करने के लिए टैप करें या फोटो लें"
+  ,"step2": "चरण 2: स्थान"
+  ,"step2Desc": "अपना स्थान पकड़ें या मानचित्र पर चुनें।"
+  ,"locating": "स्थान पता लगाया जा रहा है..."
+  ,"useLocation": "मेरा वर्तमान स्थान उपयोग करें"
+  ,"landmark": "नज़दीकी निशान (वैकल्पिक)"
+  ,"step3": "चरण 3: नोट"
+  ,"optional": "वैकल्पिक"
+  ,"listening": "सुन रहा है..."
+  ,"anythingElse": "अधिक कुछ बताना है?"
+  ,"photoRequired": "कृपया समस्या की एक फोटो संलग्न करें।"
+  ,"locationRequired": "कृपया अपना स्थान दर्ज करें।"
+  ,"voiceNotSupported": "इस ब्राउज़र में वॉइस इनपुट समर्थित नहीं है।"
+  ,"analyzing": "विश्लेषण हो रहा है…"
+  ,"saved_offline": "ऑफ़लाइन सहेजा गया — कनेक्ट होने पर सिंक होगा।"
+  ,"report_submitted": "रिपोर्ट जमा और विश्लेषित हो गई"
+  ,"failure_risk_label": "30-दिन उन्नयन जोखिम"
+  ,"detection_confidence": "डिटेक्शन विश्वसनीयता"
+  ,"routed_to": "निवेदित विभाग"
+  ,"report_visible_paragraph": "आपकी रिपोर्ट (#{id}) अब नगरपालिका डैशबोर्ड पर दिखाई दे रही है, प्राथमिकता स्कोर {score} के अनुसार रैंक की गई है।"
+}

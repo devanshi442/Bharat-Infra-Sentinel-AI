@@ -3,7 +3,7 @@ import { ArrowRight, Camera, Brain, MapPinned, ShieldCheck } from 'lucide-react'
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-ink-950 text-white overflow-hidden relative">
+    <div className="min-h-screen bg-slate-50 text-slate-900 overflow-hidden relative">
       {/* Ambient grid backdrop — evokes GIS/satellite mapping without being literal */}
       <div
         className="absolute inset-0 opacity-[0.07] pointer-events-none"
@@ -23,7 +23,7 @@ export default function Landing() {
             Bharat Infra Sentinel <span className="text-sentinel-400">AI</span>
           </span>
         </div>
-        <span className="hidden md:inline-block text-xs font-mono text-ink-600 tracking-wider uppercase border border-ink-700 rounded-full px-3 py-1.5">
+        <span className="hidden md:inline-block text-xs font-mono text-slate-500 tracking-wider uppercase border border-slate-200 rounded-full px-3 py-1.5">
           Bharat Academix CodeQuest 2026
         </span>
       </header>
@@ -38,12 +38,12 @@ export default function Landing() {
           <h1 className="font-display font-semibold text-5xl md:text-7xl leading-[1.02] tracking-tight mb-6">
             Cities decay
             <br />
-            <span className="text-ink-600">in ways the eye</span>
+            <span className="text-slate-500">in ways the eye</span>
             <br />
             can't see yet.
           </h1>
 
-          <p className="text-lg md:text-xl text-ink-600 leading-relaxed max-w-xl mb-10 font-light">
+          <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-10 font-light">
             Bharat Infra Sentinel AI turns citizen photos into predictions —
             telling municipalities which road, drain, or streetlight fails
             next, before it does.
@@ -60,7 +60,7 @@ export default function Landing() {
             </Link>
             <Link
               to="/dashboard"
-              className="inline-flex items-center justify-center gap-2 border border-ink-700 hover:border-ink-600 hover:bg-ink-900 text-white font-medium px-6 py-3.5 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-2 border border-slate-200 hover:border-slate-500 hover:bg-white text-slate-900 font-medium px-6 py-3.5 rounded-lg transition-colors"
             >
               <MapPinned className="w-4 h-4" />
               Open Government Dashboard
@@ -69,25 +69,25 @@ export default function Landing() {
         </div>
 
         {/* Process strip — order carries real meaning here (a pipeline), so numbering is justified */}
-        <div className="mt-24 md:mt-32 grid grid-cols-1 md:grid-cols-4 gap-px bg-ink-800 rounded-2xl overflow-hidden border border-ink-800">
+        <div className="mt-24 md:mt-32 grid grid-cols-1 md:grid-cols-4 gap-px bg-slate-100 rounded-2xl overflow-hidden border border-slate-100">
           {[
             { n: '01', icon: Camera, title: 'Capture', desc: 'Citizen photographs the issue — pothole, leak, garbage, dark streetlight.' },
             { n: '02', icon: Brain, title: 'Detect', desc: 'Computer vision classifies the issue type and scores its severity.' },
             { n: '03', icon: ShieldCheck, title: 'Predict', desc: 'Risk engine forecasts the probability of escalation within 30 days.' },
             { n: '04', icon: MapPinned, title: 'Route', desc: 'Issue is mapped, prioritized, and dispatched to the right department.' },
           ].map((step) => (
-            <div key={step.n} className="bg-ink-950 p-6 md:p-7">
+            <div key={step.n} className="bg-slate-50 p-6 md:p-7">
               <div className="flex items-center justify-between mb-5">
                 <step.icon className="w-5 h-5 text-sentinel-400" strokeWidth={1.8} />
-                <span className="font-mono text-xs text-ink-600">{step.n}</span>
+                <span className="font-mono text-xs text-slate-500">{step.n}</span>
               </div>
               <h3 className="font-display font-medium text-base mb-1.5">{step.title}</h3>
-              <p className="text-sm text-ink-600 leading-relaxed">{step.desc}</p>
+              <p className="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-10 text-xs text-ink-600 font-mono">
+        <p className="mt-10 text-xs text-slate-500 font-mono">
           MVP build · Team Cod-X-Titans · Hybrid CV pipeline (pretrained detection + tuned heuristics) · Rule-based predictive risk engine
         </p>
       </main>

@@ -1,0 +1,19 @@
+{
+  "app_title": "భారత్ ఇన్ఫ్రా సెంటినెల్",
+  "report_issue": "సమస్యను నివేదించండి",
+  "dashboard": "డాష్బోర్డ్",
+  "login": "లాగిన్",
+  "upload_photo": "Upload Photo",
+  "location": "Location",
+  "voice_input": "Hold to Speak",
+  "submit": "Submit Report",
+  "priority_queue": "Priority Queue",
+  "ward_health": "Ward Health Index",
+  "failure_prob": "30-Day Failure Probability",
+  "status": "Status",
+  "severity": "Severity",
+  "resolved": "Resolved",
+  "in_progress": "In Progress",
+  "open": "Open",
+  "search_issues": "Search issues..."
+}

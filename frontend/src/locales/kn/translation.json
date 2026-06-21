@@ -1,0 +1,19 @@
+{
+  "app_title": "ಭಾರತ್ ಇನ್ಫ್ರಾ ಸೆಂಟಿನೆಲ್",
+  "report_issue": "ಸಮಸ್ಯೆ ವರದಿ ಮಾಡಿ",
+  "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+  "login": "ಲಾಗಿನ್",
+  "upload_photo": "Upload Photo",
+  "location": "Location",
+  "voice_input": "Hold to Speak",
+  "submit": "Submit Report",
+  "priority_queue": "Priority Queue",
+  "ward_health": "Ward Health Index",
+  "failure_prob": "30-Day Failure Probability",
+  "status": "Status",
+  "severity": "Severity",
+  "resolved": "Resolved",
+  "in_progress": "In Progress",
+  "open": "Open",
+  "search_issues": "Search issues..."
+}

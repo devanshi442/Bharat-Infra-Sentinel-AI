@@ -24,28 +24,28 @@ function getHeaders(custom = {}) {
 }
 
 export const api = {
-  uploadIssue: async ({ file, latitude, longitude, address, reporterNote }) => {
+  uploadIssue: async ({ file, latitude, longitude, address, reporterNote, originalLanguage }) => {
     const form = new FormData()
     form.append('file', file)
     form.append('latitude', latitude)
     form.append('longitude', longitude)
     if (address) form.append('address', address)
     if (reporterNote) form.append('reporter_note', reporterNote)
+    if (originalLanguage) form.append('original_language', originalLanguage)
 
     if (!navigator.onLine) {
-      await addToQueue({ file, latitude, longitude, address, reporterNote, timestamp: Date.now() })
+      await addToQueue({ file, latitude, longitude, address, reporterNote, originalLanguage, timestamp: Date.now() })
       return { offline: true }
     }
 
     try {
       const res = await fetch(`${BASE}/issues/upload`, {
         method: 'POST',
-        headers: getHeaders(), // Don't set Content-Type for FormData
+        headers: getHeaders(),
         body: form,
       })
       return handle(res)
     } catch (err) {
-      // If network fails
       await addToQueue({ file, latitude, longitude, address, reporterNote, timestamp: Date.now() })
       return { offline: true }
     }
@@ -62,22 +62,31 @@ export const api = {
     return handle(res)
   },
 
+  /**
+   * Update an issue's status.
+   * @param {number}  id
+   * @param {string}  status       - 'reported' | 'in_progress' | 'resolved'
+   * @param {string}  [contractor] - contractor name
+   * @param {File}    [afterImageFile] - optional after-photo to attach
+   */
   updateStatus: async (id, status, contractor, afterImageFile) => {
     const form = new FormData()
     form.append('status', status)
     if (contractor) form.append('contractor', contractor)
-    if (afterImageFile) form.append('after_image', afterImageFile)
+    if (afterImageFile instanceof File) form.append('after_image', afterImageFile)
 
     const res = await fetch(`${BASE}/issues/${id}/status`, {
       method: 'PATCH',
-      headers: getHeaders(), // Don't set Content-Type, fetch sets it with boundary for FormData
+      headers: getHeaders(), // let browser set Content-Type with boundary for FormData
       body: form,
     })
     return handle(res)
   },
 
   dashboardStats: async () => {
-    const res = await fetch(`${BASE}/dashboard/stats`, { headers: getHeaders() })
+    const url = new URL(`${BASE}/dashboard/stats`, window.location.origin).href;
+    console.log('Resolved API URL:', url);
+    const res = await fetch(url, { headers: getHeaders() })
     return handle(res)
   },
 
@@ -92,11 +101,7 @@ export const api = {
   },
 
   downloadCSV: (ward = 'all') => {
-    const token = localStorage.getItem('demo-token')
-    const url = `${BASE}/dashboard/export/${ward}`
-    // Quick hack for downloading without exposing the token in URL or dealing with fetch blobs:
-    // We fetch as blob then trigger download
-    fetch(url, { headers: getHeaders() })
+    fetch(`${BASE}/dashboard/export/${ward}`, { headers: getHeaders() })
       .then(res => res.blob())
       .then(blob => {
         const a = document.createElement('a')
@@ -106,11 +111,6 @@ export const api = {
         a.click()
         document.body.removeChild(a)
       })
-  },
-
-  seedDemoData: async () => {
-    const res = await fetch(`${BASE}/seed-demo-data`, { method: 'POST', headers: getHeaders() })
-    return handle(res)
   },
 
   listContractors: async () => {
@@ -123,6 +123,16 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
+    })
+    return handle(res)
+  },
+
+  translate: async (text, targetLang) => {
+    if (!text) return { translatedText: '' }
+    const res = await fetch(`${BASE}/translate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getHeaders() },
+      body: JSON.stringify({ text, target_lang: targetLang })
     })
     return handle(res)
   },
