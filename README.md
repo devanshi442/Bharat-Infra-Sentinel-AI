@@ -46,7 +46,7 @@ Our system calculates the 30-day escalation probability of every civic issue and
 - **Spatial Clustering via Haversine**: Automatically detects identical issues reported within a 100-meter radius. Instead of cluttering the queue with duplicates, it clusters them, dynamically boosting the original issue's priority score.
 - **Automated Department Routing**: Bypasses the municipal switchboard by analyzing the issue type and routing it directly to the exact department (e.g., PWD, Water & Sanitation) responsible.
 
-### 5. ⏳ Accountability & SLA Enforcement
+### 5. Accountability & SLA Enforcement
 - **Dynamic SLAs**: Enforces strict Service Level Agreements based on urgency (e.g., 7 days for Potholes, 3 days for Waterlogging).
 - **Contractor Leaderboards**: Tracks resolution metrics and ranks assigned contractors by a transparent performance score (`issues_resolved / issues_assigned`).
 - **Exportable Ward Reports**: One-click generation of fully compiled, ward-level CSV reports for municipal audits.
