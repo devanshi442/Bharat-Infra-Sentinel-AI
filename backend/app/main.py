@@ -25,7 +25,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
-from app.database import init_db, get_db, Issue, Contractor
+from app.database import init_db, get_db, Issue, Contractor, SessionLocal
 from app.detection import classify_issue
 from app.prediction import predict_failure_probability, compute_priority_score, compute_ward_health_index
 from app.routing import get_department
@@ -66,6 +66,32 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.on_event("startup")
 def on_startup():
+    import traceback
+    try:
+        with open("diag_output.txt", "w", encoding="utf-8") as f:
+            f.write("=== BACKEND DIAG_START ===\n")
+            try:
+                db = SessionLocal()
+                issues_cnt = db.query(Issue).count()
+                contractors_cnt = db.query(Contractor).count()
+                f.write(f"Database Connect: OK\n")
+                f.write(f"Issues Count: {issues_cnt}\n")
+                f.write(f"Contractors Count: {contractors_cnt}\n")
+                first_issue = db.query(Issue).first()
+                if first_issue:
+                    f.write(f"First Issue ID: {first_issue.id}\n")
+                    f.write(f"First Issue created_at: {first_issue.created_at}\n")
+                    f.write(f"First Issue latitude: {first_issue.latitude}\n")
+                    f.write(f"First Issue longitude: {first_issue.longitude}\n")
+                else:
+                    f.write("First Issue: None\n")
+                db.close()
+            except Exception as e:
+                f.write(f"Database Connect: FAIL\n")
+                f.write(f"Error: {str(e)}\n")
+                f.write(traceback.format_exc())
+    except Exception:
+        pass
     init_db()
 
 
@@ -76,7 +102,6 @@ def root():
 @app.get("/api/db_count")
 def db_count(db: Session = Depends(get_db)):
     return {"issues_count": db.query(Issue).count()}
-
 # Force Uvicorn Reload
 @app.get("/api/seed")
 def run_seed_standalone():

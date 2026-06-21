@@ -38,7 +38,7 @@ function ToastContainer({ toasts }) {
         <div
           key={t.id}
           className={`flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-sm font-medium backdrop-blur-sm border transition-all pointer-events-auto
-            ${t.type === 'success' ? 'bg-sentinel-500/90 border-sentinel-400/30 text-white' : ''}
+            ${t.type === 'success' ? 'bg-brand-primary/90 border-brand-medium/30 text-white' : ''}
             ${t.type === 'error' ? 'bg-red-500/90 border-red-400/30 text-white' : ''}
             ${t.type === 'info' ? 'bg-slate-100/95 border-slate-200 text-slate-700' : ''}
           `}
@@ -129,7 +129,7 @@ export default function Dashboard() {
   const slaBreaches = issues.filter(i => i.sla_breach && i.status !== 'resolved').length
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-paper text-brand-deep">
       <ToastContainer toasts={toasts} />
 
       <TopBar
@@ -200,16 +200,16 @@ function TopBar({ onRefresh, loading, slaBreaches, searchQuery, setSearchQuery }
           <Link to="/" className="text-slate-500 hover:text-slate-900 transition-colors shrink-0">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <div className="flex items-center gap-2 min-w-0">
-            <ShieldCheck className="w-5 h-5 text-sentinel-400 shrink-0" />
+          <div className="flex items-center gap-3 min-w-0">
+            <ShieldCheck className="w-5 h-5 text-brand-medium shrink-0" />
             <span className="font-display font-semibold tracking-tight truncate">Municipal Command Centre</span>
           </div>
           <span className="hidden md:inline-block text-xs font-mono text-slate-500 border border-slate-200 rounded-full px-2.5 py-1 shrink-0">
-            National View
+            {t('national_view', 'National View')}
           </span>
           {slaBreaches > 0 && (
             <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-red-500/15 border border-red-500/25 text-red-400 rounded-full px-2.5 py-1 shrink-0 animate-pulse">
-              <AlertOctagon className="w-3.5 h-3.5" /> {slaBreaches} SLA breach{slaBreaches > 1 ? 'es' : ''}
+              <AlertOctagon className="w-3.5 h-3.5" /> {slaBreaches} {slaBreaches > 1 ? t('sla_breaches_plural', 'SLA breaches') : t('sla_breach_singular', 'SLA breach')}
             </span>
           )}
         </div>
@@ -225,7 +225,7 @@ function TopBar({ onRefresh, loading, slaBreaches, searchQuery, setSearchQuery }
                 onRefresh();
               }
             }}
-            className="hidden sm:block text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-signal-400 bg-white"
+            className="hidden sm:block text-xs border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-brand-accent bg-white"
           />
           <LanguageSwitcher />
           <button
@@ -233,7 +233,7 @@ function TopBar({ onRefresh, loading, slaBreaches, searchQuery, setSearchQuery }
             className="flex items-center gap-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-2 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden sm:inline">{t('refresh', 'Refresh')}</span>
           </button>
         </div>
       </div>
@@ -262,11 +262,11 @@ function StatsRow({ stats, loading }) {
   if (!stats) return null
 
   const cards = [
-    { label: 'Total Issues', value: stats.total_issues, icon: MapPin, accent: 'text-slate-900' },
+    { label: 'Total Issues', value: stats.total_issues, icon: MapPin, accent: 'text-brand-deep' },
     { label: 'Critical', value: stats.critical_count, icon: AlertOctagon, accent: 'text-red-400' },
-    { label: 'In Progress', value: stats.in_progress_issues, icon: Clock, accent: 'text-signal-400' },
-    { label: 'Resolved', value: stats.resolved_issues, icon: CheckCircle2, accent: 'text-sentinel-400' },
-    { label: 'Avg. Failure Risk', value: `${stats.avg_failure_probability}%`, icon: TrendingUp, accent: 'text-signal-400' },
+    { label: 'In Progress', value: stats.in_progress_issues, icon: Clock, accent: 'text-brand-accent' },
+    { label: 'Resolved', value: stats.resolved_issues, icon: CheckCircle2, accent: 'text-brand-medium' },
+    { label: 'Avg. Failure Risk', value: `${stats.avg_failure_probability}%`, icon: TrendingUp, accent: 'text-brand-accent' },
     { label: 'Health Index', value: `${stats.health_index}`, icon: ShieldCheck, accent: healthAccent(stats.health_index) },
   ]
 
@@ -278,7 +278,7 @@ function StatsRow({ stats, loading }) {
           <div className="flex items-center justify-between mb-4">
             <c.icon className={`w-5 h-5 ${c.accent} opacity-80`} strokeWidth={2} />
           </div>
-          <div className="font-display font-semibold text-3xl tracking-tighter mb-1 text-slate-900">{c.value}</div>
+          <div className="font-mono font-semibold text-3xl tracking-tighter mb-1 text-brand-deep">{c.value}</div>
           <div className="text-xs text-slate-500 font-medium tracking-wide uppercase">{c.label}</div>
         </div>
       ))}
@@ -287,8 +287,8 @@ function StatsRow({ stats, loading }) {
 }
 
 function healthAccent(v) {
-  if (v >= 70) return 'text-sentinel-400'
-  if (v >= 40) return 'text-signal-400'
+  if (v >= 70) return 'text-brand-medium'
+  if (v >= 40) return 'text-brand-accent'
   return 'text-red-400'
 }
 
@@ -296,6 +296,7 @@ function healthAccent(v) {
 // Map panel
 // ---------------------------------------------------------------------------
 function MapPanel({ issues, onSelect, loading }) {
+  const { t } = useTranslation()
   const mapRef = useRef(null)
   
   const createClusterCustomIcon = function (cluster) {
@@ -304,7 +305,7 @@ function MapPanel({ issues, onSelect, loading }) {
     
     let counts = { reported: 0, in_progress: 0, resolved: 0 };
     markers.forEach(m => {
-      const color = m.options.fillColor;
+      const color = m.options?.fillColor;
       if (color === '#e11d48') counts.reported++;
       else if (color === '#f59e0b') counts.in_progress++;
       else if (color === '#059669') counts.resolved++;
@@ -316,20 +317,10 @@ function MapPanel({ issues, onSelect, loading }) {
     if (counts.resolved > max) { dominantStatus = 'resolved'; max = counts.resolved; }
 
     let bgColor = 'bg-slate-400';
-    if (dominantStatus === 'reported') bgColor = 'bg-rose-600';
-    if (dominantStatus === 'in_progress') bgColor = 'bg-amber-500';
-    if (dominantStatus === 'resolved') bgColor = 'bg-emerald-600';
-
-    // CSS conic gradient for a clean, non-noisy pie chart ring around the cluster
-    const pctR = (counts.reported / count) * 100;
-    const pctI = (counts.in_progress / count) * 100;
-    const pctRes = (counts.resolved / count) * 100;
-    
-    const gradient = `conic-gradient(
-      #e11d48 0% ${pctR}%,
-      #f59e0b ${pctR}% ${pctR + pctI}%,
-      #059669 ${pctR + pctI}% 100%
-    )`;
+    let ringColor = 'border-slate-100';
+    if (dominantStatus === 'reported') { bgColor = 'bg-rose-600'; ringColor = 'border-rose-100'; }
+    if (dominantStatus === 'in_progress') { bgColor = 'bg-amber-500'; ringColor = 'border-amber-100'; }
+    if (dominantStatus === 'resolved') { bgColor = 'bg-emerald-600'; ringColor = 'border-emerald-100'; }
 
     // Dynamic sizing
     let size = 32;
@@ -338,10 +329,8 @@ function MapPanel({ issues, onSelect, loading }) {
 
     return L.divIcon({
       html: `
-        <div class="rounded-full shadow-lg flex items-center justify-center relative" style="width: ${size}px; height: ${size}px; background: ${gradient};">
-          <div class="${bgColor} text-white rounded-full flex items-center justify-center font-bold" style="width: ${size - 6}px; height: ${size - 6}px; font-size: ${size > 40 ? '13px' : '11px'};">
-            ${count.toLocaleString()}
-          </div>
+        <div class="rounded-full shadow-lg border-2 ${ringColor} ${bgColor} text-white flex items-center justify-center font-bold" style="width: ${size}px; height: ${size}px; font-size: ${size > 40 ? '13px' : '11px'};">
+          ${count.toLocaleString()}
         </div>
       `,
       className: 'custom-cluster-icon',
@@ -354,31 +343,31 @@ function MapPanel({ issues, onSelect, loading }) {
   return (
     <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
-        <h2 className="font-display font-medium text-sm">Live Issue Map</h2>
-        <span className="text-xs text-slate-500">{issues.length} reports</span>
+        <h2 className="font-display font-medium text-sm">{t('live_issue_map', 'Live Issue Map')}</h2>
+        <span className="text-xs text-slate-500">{issues.length} {t('reports_count_lowercase', 'reports')}</span>
       </div>
       <div className="h-[380px] md:h-[420px] relative">
         {/* Legend */}
         <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur border border-slate-200 rounded-lg shadow-sm p-3 text-xs flex flex-col gap-2 pointer-events-auto">
-          <div className="font-semibold text-slate-700 mb-0.5">Issue Status</div>
+          <div className="font-semibold text-slate-700 mb-0.5">{t('issue_status', 'Issue Status')}</div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-rose-600 border border-rose-600"></div>
-            <span className="text-slate-600">Open (Reported)</span>
+            <span className="text-slate-600">{t('status_reported', 'Open (Reported)')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-amber-500 border border-amber-500" style={{ borderStyle: 'dashed' }}></div>
-            <span className="text-slate-600">In Progress</span>
+            <span className="text-slate-600">{t('status_in_progress', 'In Progress')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-emerald-600 border border-emerald-600" style={{ borderStyle: 'dotted' }}></div>
-            <span className="text-slate-600">Resolved</span>
+            <span className="text-slate-600">{t('status_resolved', 'Resolved')}</span>
           </div>
         </div>
         {loading && issues.length === 0 ? (
-          <div className="h-full flex items-center justify-center bg-slate-50">
+          <div className="h-full flex items-center justify-center bg-paper">
             <div className="text-center">
-              <div className="w-8 h-8 border-2 border-signal-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-xs text-slate-500">Loading map…</p>
+              <div className="w-8 h-8 border-2 border-brand-accent border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-xs text-slate-500">{t('loading_map', 'Loading map…')}</p>
             </div>
           </div>
         ) : (
@@ -401,13 +390,15 @@ function MapPanel({ issues, onSelect, loading }) {
               spiderfyOnMaxZoom={true}
               showCoverageOnHover={false}
             >
-              {issues.map(issue => {
-                const statusColor = issue.status === 'reported' ? '#e11d48' : issue.status === 'in_progress' ? '#f59e0b' : '#059669'
-                const dashArray = issue.status === 'reported' ? '' : issue.status === 'in_progress' ? '5,5' : '2,4'
-                return (
-                  <CircleMarker
-                    key={issue.id}
-                    center={[issue.latitude, issue.longitude]}
+              {issues
+                .filter(issue => issue && typeof issue.latitude === 'number' && typeof issue.longitude === 'number')
+                .map(issue => {
+                  const statusColor = issue.status === 'reported' ? '#e11d48' : issue.status === 'in_progress' ? '#f59e0b' : '#059669'
+                  const dashArray = issue.status === 'reported' ? '' : issue.status === 'in_progress' ? '5,5' : '2,4'
+                  return (
+                    <CircleMarker
+                      key={issue.id}
+                      center={[issue.latitude, issue.longitude]}
                     radius={issue.status === 'resolved' ? 5 : 7 + issue.severity_score / 20}
                     pathOptions={{
                       color: statusColor,
@@ -421,10 +412,10 @@ function MapPanel({ issues, onSelect, loading }) {
                   >
                     <Popup>
                       <div className="text-xs">
-                        <strong>{ISSUE_TYPE_META[issue.issue_type]?.label}</strong> · {issue.severity_label}
+                        <strong>{t('issue_type_' + issue.issue_type, ISSUE_TYPE_META[issue.issue_type]?.label)}</strong> · {t('severity_' + issue.severity_label.toLowerCase(), issue.severity_label)}
                         <br />
-                        Priority: {issue.priority_score}
-                        {issue.sla_breach && <><br /><span style={{ color: '#dc2626' }}>⚠ SLA Breached</span></>}
+                        {t('priority_label', 'Priority:')} {issue.priority_score}
+                        {issue.sla_breach && <><br /><span style={{ color: '#dc2626' }}>{t('sla_breached', '⚠ SLA Breached')}</span></>}
                       </div>
                     </Popup>
                   </CircleMarker>
@@ -447,9 +438,10 @@ function getCssVar(name) {
 // ---------------------------------------------------------------------------
 // Charts
 // ---------------------------------------------------------------------------
-const PIE_COLORS = ['#f4670e', '#2dd4a7', '#2563eb', '#eab308', '#0f9a78', '#64748b']
+const PIE_COLORS = ['#002970', '#0f46a8', '#f59e0b', '#3b82f6', '#1d4ed8', '#64748b']
 
 function ChartsPanel({ stats, wardHealth, loading }) {
+  const { t } = useTranslation()
   if (loading && !stats) {
     return (
       <div className="space-y-5">
@@ -475,9 +467,9 @@ function ChartsPanel({ stats, wardHealth, loading }) {
   return (
     <div className="space-y-5">
       <div className="bg-white border border-slate-100 rounded-xl p-5">
-        <h2 className="font-display font-medium text-sm mb-3">Issues by Type</h2>
+        <h2 className="font-display font-medium text-sm mb-3">{t('issues_by_type', 'Issues by Type')}</h2>
         {typeData.length === 0 ? (
-          <EmptyChart label="No issues yet" />
+          <EmptyChart label={t('no_issues_yet', 'No issues yet')} />
         ) : (
           <>
             <div className="h-40">
@@ -503,9 +495,9 @@ function ChartsPanel({ stats, wardHealth, loading }) {
       </div>
 
       <div className="bg-white border border-slate-100 rounded-xl p-5">
-        <h2 className="font-display font-medium text-sm mb-3">Ward Health Index</h2>
+        <h2 className="font-display font-medium text-sm mb-3">{t('ward_health_index', 'Ward Health Index')}</h2>
         {wardHealth.length === 0 ? (
-          <EmptyChart label="No ward data" />
+          <EmptyChart label={t('no_ward_data', 'No ward data')} />
         ) : (
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
@@ -519,7 +511,7 @@ function ChartsPanel({ stats, wardHealth, loading }) {
                 <RechartsTooltip contentStyle={tooltipStyle} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {wardHealth.map((w, i) => (
-                    <Cell key={i} fill={w.health_index >= 70 ? '#14b890' : w.health_index >= 40 ? '#f4670e' : '#dc2626'} />
+                    <Cell key={i} fill={w.health_index >= 70 ? '#0f46a8' : w.health_index >= 40 ? '#f59e0b' : '#dc2626'} />
                   ))}
                 </Bar>
               </BarChart>
@@ -535,33 +527,34 @@ function ChartsPanel({ stats, wardHealth, loading }) {
 // Forecast
 // ---------------------------------------------------------------------------
 function ForecastPanel({ data, days, setDays, resolveN, setResolveN, loading }) {
+  const { t } = useTranslation()
   return (
     <div className="bg-white border border-slate-100 rounded-xl p-5">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-5">
         <div>
-          <h2 className="font-display font-medium text-sm">Infrastructure Health Forecast</h2>
-          <p className="text-xs text-slate-500 mt-1">Projected index over {days} days</p>
+          <h2 className="font-display font-medium text-sm">{t('infra_health_forecast', 'Infrastructure Health Forecast')}</h2>
+          <p className="text-xs text-slate-500 mt-1">{t('projected_index', 'Projected index over {days} days').replace('{days}', days)}</p>
         </div>
         <div className="flex flex-wrap gap-3 items-center">
           <label className="flex items-center gap-2 text-xs text-slate-600">
-            <span className="hidden sm:inline">Intervention:</span>
+            <span className="hidden sm:inline">{t('intervention', 'Intervention:')}</span>
             <select
               value={resolveN}
               onChange={e => setResolveN(Number(e.target.value))}
-              className="bg-slate-50 border border-slate-100 rounded px-2 py-1 outline-none focus:border-signal-400"
+              className="bg-paper border border-slate-100 rounded px-2 py-1 outline-none focus:border-brand-accent"
             >
-              <option value={0}>Do nothing</option>
-              <option value={5}>Resolve top 5</option>
-              <option value={10}>Resolve top 10</option>
-              <option value={20}>Resolve top 20</option>
+              <option value={0}>{t('do_nothing', 'Do nothing')}</option>
+              <option value={5}>{t('resolve_top_5', 'Resolve top 5')}</option>
+              <option value={10}>{t('resolve_top_10', 'Resolve top 10')}</option>
+              <option value={20}>{t('resolve_top_20', 'Resolve top 20')}</option>
             </select>
           </label>
           <label className="flex items-center gap-2 text-xs text-slate-600">
-            <span>Days:</span>
+            <span>{t('days_label', 'Days:')}</span>
             <select
               value={days}
               onChange={e => setDays(Number(e.target.value))}
-              className="bg-slate-50 border border-slate-100 rounded px-2 py-1 outline-none focus:border-signal-400"
+              className="bg-paper border border-slate-100 rounded px-2 py-1 outline-none focus:border-brand-accent"
             >
               <option value={30}>30</option>
               <option value={60}>60</option>
@@ -574,19 +567,19 @@ function ForecastPanel({ data, days, setDays, resolveN, setResolveN, loading }) 
       {loading && data.length === 0 ? (
         <Skeleton className="h-48 w-full" />
       ) : data.length === 0 ? (
-        <EmptyChart label="No forecast data available" />
+        <EmptyChart label={t('no_forecast_data', 'No forecast data available')} />
       ) : (
         <div className="h-48 w-full text-xs">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorCurrent" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f4670e" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#f4670e" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorOptimized" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#14b890" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#14b890" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#0f46a8" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#0f46a8" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#2d3855" vertical={false} />
@@ -597,8 +590,8 @@ function ForecastPanel({ data, days, setDays, resolveN, setResolveN, loading }) 
                 labelFormatter={v => `Day ${v}`}
               />
               <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '11px', color: '#5d6b8a' }} />
-              <Area type="monotone" dataKey="current" name="Current Trajectory" stroke="#f4670e" fillOpacity={1} fill="url(#colorCurrent)" />
-              <Area type="monotone" dataKey="optimized" name={`If Top ${resolveN} Resolved`} stroke="#14b890" fillOpacity={1} fill="url(#colorOptimized)" />
+              <Area type="monotone" dataKey="current" name={t('current_trajectory', 'Current Trajectory')} stroke="#f59e0b" fillOpacity={1} fill="url(#colorCurrent)" />
+              <Area type="monotone" dataKey="optimized" name={t('if_top_resolved', 'If Top {resolveN} Resolved').replace('{resolveN}', resolveN)} stroke="#0f46a8" fillOpacity={1} fill="url(#colorOptimized)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -611,6 +604,7 @@ function ForecastPanel({ data, days, setDays, resolveN, setResolveN, loading }) 
 // Contractors
 // ---------------------------------------------------------------------------
 function ContractorsPanel({ contractors, loading }) {
+  const { t } = useTranslation()
   if (loading && contractors.length === 0) {
     return (
       <div className="bg-white border border-slate-100 rounded-xl p-5">
@@ -625,7 +619,7 @@ function ContractorsPanel({ contractors, loading }) {
   return (
     <div className="bg-white border border-slate-100 rounded-xl p-5">
       <h2 className="font-display font-medium text-sm mb-4 flex items-center gap-2 text-slate-900">
-        <Users className="w-4 h-4 text-slate-500" /> Contractor Leaderboard
+        <Users className="w-4 h-4 text-slate-500" /> {t('contractor_leaderboard', 'Contractor Leaderboard')}
       </h2>
       <div className="space-y-4">
         {contractors.map((c, i) => {
@@ -639,11 +633,11 @@ function ContractorsPanel({ contractors, loading }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">{c.issues_resolved}/{c.issues_assigned}</span>
-                  <span className="text-signal-400 font-display font-semibold">{Math.round(c.performance_score)}</span>
+                  <span className="text-brand-accent font-mono font-semibold">{Math.round(c.performance_score)}</span>
                 </div>
               </div>
               <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-signal-500 to-signal-400 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+                <div className="h-full bg-gradient-to-r from-brand-accent to-brand-accent/80 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )
@@ -666,7 +660,7 @@ function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatu
             {t('priority_queue', 'Priority Queue')}
             {slaBreaches > 0 && (
               <span className="ml-2 text-[10px] font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-full px-1.5 py-0.5">
-                {slaBreaches} breached
+                {slaBreaches} {t('breached', 'breached')}
               </span>
             )}
           </h2>
@@ -675,10 +669,10 @@ function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatu
               <button
                 key={s}
                 onClick={() => onFilterChange(s)}
-                className={`text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === s ? 'bg-signal-500 text-white' : 'bg-slate-100 text-slate-500 hover:text-slate-900'
+                className={`text-xs px-2.5 py-1 rounded-full transition-colors ${filterStatus === s ? 'bg-brand-accent text-white font-medium' : 'bg-slate-100 text-slate-500 hover:text-brand-deep'
                   }`}
               >
-                {s === 'all' ? 'All' : STATUS_META[s].label}
+                {s === 'all' ? t('all', 'All') : t('status_' + s, STATUS_META[s].label)}
               </button>
             ))}
           </div>
@@ -688,7 +682,7 @@ function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatu
           className="shrink-0 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors mt-0.5"
         >
           <Download className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Export</span>
+          <span className="hidden sm:inline">{t('export', 'Export')}</span>
         </button>
       </div>
 
@@ -706,8 +700,8 @@ function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatu
         ) : issues.length === 0 ? (
           <div className="px-5 py-12 text-center">
             <MapPin className="w-8 h-8 text-slate-200 mx-auto mb-3" />
-            <p className="text-sm text-slate-500 mb-1">No issues found</p>
-            <p className="text-xs text-slate-200">Submit a citizen report.</p>
+            <p className="text-sm text-slate-500 mb-1">{t('no_issues_found', 'No issues found')}</p>
+            <p className="text-xs text-slate-200">{t('submit_citizen_report', 'Submit a citizen report.')}</p>
           </div>
         ) : (
           issues.map(issue => (
@@ -720,6 +714,7 @@ function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatu
 }
 
 function IssueRow({ issue, onSelect }) {
+  const { t } = useTranslation()
   const typeMeta = ISSUE_TYPE_META[issue.issue_type] || ISSUE_TYPE_META.other
   const sevMeta = SEVERITY_META[issue.severity_label] || SEVERITY_META.Low
   const statusMeta = STATUS_META[issue.status]
@@ -733,13 +728,13 @@ function IssueRow({ issue, onSelect }) {
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <div className="flex items-center gap-2 min-w-0">
           <span>{typeMeta.icon}</span>
-          <span className="font-medium text-sm truncate">{typeMeta.label}</span>
+          <span className="font-medium text-sm truncate">{t('issue_type_' + issue.issue_type, typeMeta.label)}</span>
         </div>
         <span className="text-xs font-mono text-slate-500 shrink-0">#{issue.id}</span>
       </div>
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ color: sevMeta.color, background: `${sevMeta.color}1a` }}>
-          {issue.severity_label}
+          {t('severity_' + issue.severity_label.toLowerCase(), issue.severity_label)}
         </span>
         <span className="text-[10px] text-slate-500 truncate">{issue.ward}</span>
         {issue.report_count > 1 && (
@@ -751,20 +746,22 @@ function IssueRow({ issue, onSelect }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusMeta.color }} />
-          <span className="text-xs text-slate-500">{statusMeta.label}</span>
+          <span className="text-xs text-slate-500">{t('status_' + issue.status, statusMeta.label)}</span>
         </div>
         <div className="flex items-center gap-2">
           {issue.status !== 'resolved' && issue.days_until_sla !== null && (
-            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${issue.sla_breach ? 'bg-red-500/10 text-red-400' : 'bg-sentinel-500/10 text-sentinel-400'
+            <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded ${issue.sla_breach ? 'bg-red-500/10 text-red-400' : 'bg-brand-medium/10 text-brand-medium'
               }`}>
-              {issue.sla_breach ? `⚠ ${Math.abs(issue.days_until_sla)}d overdue` : `${issue.days_until_sla}d left`}
+              {issue.sla_breach 
+                ? t('days_overdue_tag', '⚠ {days}d overdue').replace('{days}', Math.abs(issue.days_until_sla)) 
+                : t('days_left_tag', '{days}d left').replace('{days}', issue.days_until_sla)}
             </span>
           )}
-          <span className="text-xs text-slate-500">{timeAgo(issue.created_at)}</span>
+          <span className="text-xs text-slate-400">{timeAgo(issue.created_at, t)}</span>
         </div>
       </div>
       <div className="mt-2 h-1 bg-slate-100 rounded-full overflow-hidden">
-        <div className="h-full bg-signal-500 rounded-full" style={{ width: `${issue.priority_score}%` }} />
+        <div className="h-full bg-brand-accent rounded-full" style={{ width: `${issue.priority_score}%` }} />
       </div>
     </button>
   )
@@ -774,6 +771,7 @@ function IssueRow({ issue, onSelect }) {
 // Issue detail modal
 // ---------------------------------------------------------------------------
 function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
+  const { t } = useTranslation()
   const typeMeta = ISSUE_TYPE_META[issue.issue_type] || ISSUE_TYPE_META.other
   const sevMeta = SEVERITY_META[issue.severity_label] || SEVERITY_META.Low
   const [selectedContractor, setSelectedContractor] = useState(issue.contractor || '')
@@ -810,10 +808,10 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
               <span className="text-2xl">{typeMeta.icon}</span>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display font-semibold text-lg">{typeMeta.label}</h3>
+                  <h3 className="font-display font-semibold text-lg">{t('issue_type_' + issue.issue_type, typeMeta.label)}</h3>
                   {issue.report_count > 1 && (
                     <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5" /> {issue.report_count} Reports
+                      <Users className="w-3.5 h-3.5" /> {issue.report_count} {t('reports_count', 'Reports')}
                     </span>
                   )}
                 </div>
@@ -828,12 +826,12 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
           {/* Images */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Before</span>
+              <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{t('before', 'Before')}</span>
               <img src={issue.image_path} alt="Before" className="w-full h-40 object-cover rounded-xl border border-slate-100" />
             </div>
             {issue.after_image_path ? (
               <div className="space-y-1">
-                <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">After</span>
+                <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{t('after', 'After')}</span>
                 <img src={issue.after_image_path} alt="After" className="w-full h-40 object-cover rounded-xl border border-slate-100" />
               </div>
             ) : (
@@ -843,13 +841,13 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
               >
                 {afterImageFile ? (
                   <div className="text-xs text-slate-600 text-center px-2">
-                    <CheckCircle2 className="w-6 h-6 text-signal-400 mx-auto mb-1" />
+                    <CheckCircle2 className="w-6 h-6 text-brand-accent mx-auto mb-1" />
                     {afterImageFile.name}
                   </div>
                 ) : (
                   <div className="text-xs text-slate-500 text-center px-2">
                     <Download className="w-5 h-5 mx-auto mb-1 opacity-50 rotate-180" />
-                    Click to attach after photo
+                    {t('click_attach_after_photo', 'Click to attach after photo')}
                   </div>
                 )}
               </div>
@@ -859,24 +857,24 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
 
           {/* Metrics */}
           <div className="grid grid-cols-2 gap-3">
-            <Metric label="Severity" value={issue.severity_label} color={sevMeta.color} />
-            <Metric label="Severity Score" value={`${issue.severity_score}/100`} />
-            <Metric label="30-day Risk" value={`${issue.failure_probability_30d}%`} color="#f4670e" />
-            <Metric label="Priority Score" value={`${issue.priority_score}/100`} />
+            <Metric label={t('severity', 'Severity')} value={t('severity_' + issue.severity_label.toLowerCase(), issue.severity_label)} color={sevMeta.color} />
+            <Metric label={t('severity_score', 'Severity Score')} value={`${issue.severity_score}/100`} />
+            <Metric label={t('30d_risk', '30-day Risk')} value={`${issue.failure_probability_30d}%`} color="#f4670e" />
+            <Metric label={t('priority_score', 'Priority Score')} value={`${issue.priority_score}/100`} />
           </div>
 
           {/* SLA status */}
           {issue.status !== 'resolved' && issue.days_until_sla !== null && (
             <div className={`text-sm p-3 rounded-xl border ${issue.sla_breach
                 ? 'bg-red-500/5 border-red-500/20 text-red-400'
-                : 'bg-sentinel-500/5 border-sentinel-500/20 text-sentinel-400'
+                : 'bg-brand-medium/5 border-brand-medium/20 text-brand-medium'
               }`}>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span className="font-medium">SLA Status: </span>
+                <span className="font-medium">{t('sla_status', 'SLA Status:')} </span>
                 <span>{issue.sla_breach
-                  ? `Breached ${Math.abs(issue.days_until_sla)} day${Math.abs(issue.days_until_sla) !== 1 ? 's' : ''} ago`
-                  : `${issue.days_until_sla} day${issue.days_until_sla !== 1 ? 's' : ''} remaining`
+                  ? t('sla_breached_days', 'Breached {days} days ago').replace('{days}', Math.abs(issue.days_until_sla))
+                  : t('sla_remaining_days', '{days} days remaining').replace('{days}', issue.days_until_sla)
                 }</span>
               </div>
             </div>
@@ -884,26 +882,26 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
 
           {/* Details */}
           <div className="text-sm space-y-2 border-t border-slate-100 pt-4">
-            <Row label="Department" value={issue.assigned_department} />
-            <Row label="Address" value={issue.address || '—'} />
+            <Row label={t('department', 'Department')} value={issue.assigned_department} />
+            <Row label={t('address', 'Address')} value={issue.address || '—'} />
             <div className="flex justify-between gap-4 items-center">
-              <span className="text-slate-500 shrink-0">Contractor</span>
+              <span className="text-slate-500 shrink-0">{t('contractor', 'Contractor')}</span>
               <select
                 value={selectedContractor}
                 onChange={e => setSelectedContractor(e.target.value)}
-                className="bg-slate-50 border border-slate-100 text-slate-600 text-xs rounded px-2 py-1 outline-none focus:border-signal-400"
+                className="bg-paper border border-slate-100 text-slate-600 text-xs rounded px-2 py-1 outline-none focus:border-brand-accent"
               >
-                <option value="">Unassigned</option>
+                <option value="">{t('unassigned', 'Unassigned')}</option>
                 {contractors.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
             </div>
-            <Row label="Reported" value={timeAgo(issue.created_at)} />
-            {issue.reporter_note && <Row label="Citizen note" value={issue.reporter_note} />}
+            <Row label={t('reported_time', 'Reported')} value={timeAgo(issue.created_at, t)} />
+            {issue.reporter_note && <Row label={t('citizen_note', 'Citizen note')} value={issue.reporter_note} />}
           </div>
 
           {/* Status controls */}
           <div className="border-t border-slate-100 pt-4">
-            <p className="text-xs text-slate-500 mb-2">Update status</p>
+            <p className="text-xs text-slate-500 mb-2">{t('update_status', 'Update status')}</p>
             <div className="flex gap-2">
               {['reported', 'in_progress', 'resolved'].map(s => (
                 <button
@@ -911,13 +909,13 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
                   onClick={() => handleUpdate(s)}
                   disabled={updating}
                   className={`flex-1 text-xs font-medium py-2 rounded-lg transition-colors disabled:opacity-50 ${issue.status === s
-                      ? 'bg-signal-500 text-white'
-                      : 'bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                      ? 'bg-brand-accent text-white'
+                      : 'bg-slate-100 text-slate-500 hover:text-brand-deep hover:bg-slate-200'
                     }`}
                 >
                   {updating && issue.status !== s ? (
                     <span className="inline-block w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-                  ) : STATUS_META[s].label}
+                  ) : t('status_' + s, STATUS_META[s].label)}
                 </button>
               ))}
             </div>
@@ -933,9 +931,9 @@ function IssueDetailModal({ issue, contractors, onClose, onStatusChange }) {
 // ---------------------------------------------------------------------------
 function Metric({ label, value, color }) {
   return (
-    <div className="bg-slate-50 rounded-lg p-3">
+    <div className="bg-paper rounded-lg p-3">
       <div className="text-[11px] text-slate-500 mb-1">{label}</div>
-      <div className="font-display font-semibold" style={color ? { color } : {}}>{value}</div>
+      <div className="font-mono font-semibold" style={color ? { color } : {}}>{value}</div>
     </div>
   )
 }

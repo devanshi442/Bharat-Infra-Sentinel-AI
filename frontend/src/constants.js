@@ -20,13 +20,13 @@ export const STATUS_META = {
   resolved: { label: 'Resolved', color: '#16a34a' },
 }
 
-export function timeAgo(dateStr) {
+export function timeAgo(dateStr, t) {
   const diff = Date.now() - new Date(dateStr).getTime()
   const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 1) return t ? t('just_now', 'just now') : 'just now'
+  if (mins < 60) return t ? t('mins_ago', '{{count}}m ago', { count: mins }).replace('{{count}}', mins) : `${mins}m ago`
   const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
+  if (hrs < 24) return t ? t('hours_ago', '{{count}}h ago', { count: hrs }).replace('{{count}}', hrs) : `${hrs}h ago`
   const days = Math.floor(hrs / 24)
-  return `${days}d ago`
+  return t ? t('days_ago', '{{count}}d ago', { count: days }).replace('{{count}}', days) : `${days}d ago`
 }
