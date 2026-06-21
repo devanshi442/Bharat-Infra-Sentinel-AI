@@ -16,7 +16,7 @@ export const SEVERITY_META = {
 
 export const STATUS_META = {
   reported: { label: 'Reported', color: '#dc2626' },
-  in_progress: { label: 'In Progress', color: '#ea580c' },
+  in_progress: { label: 'In Progress', color: '#2563eb' },
   resolved: { label: 'Resolved', color: '#16a34a' },
 }
 

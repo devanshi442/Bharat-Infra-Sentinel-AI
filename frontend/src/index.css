@@ -11,25 +11,73 @@ html, body, #root {
   height: 100%;
 }
 
-body {
-  background-color: #f8fafc;
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  color: #0f172a;
-  -webkit-font-smoothing: antialiased;
+/* ── Light mode tokens ─────────────────────────────────────────────────── */
+:root {
+  --color-brand-deep:    #1a0533;
+  --color-brand-primary: #5b21b6;
+  --color-brand-medium:  #a855f7;
+  --color-brand-light:   #f3e8ff;
+  --color-brand-accent:  #ec4899;
+  --color-brand-yellow:  #facc15;
+  --color-paper:         #faf5ff;
+  --color-surface:       #ffffff;
+  --color-surface-2:     #f5f0ff;
+  --color-border-muted:  #ede9fe;
 }
 
-:root {
-  --color-brand-deep: #001645;
-  --color-brand-primary: #002970;
-  --color-brand-medium: #0f46a8;
-  --color-brand-light: #eff6ff;
-  --color-brand-accent: #f59e0b;
+/* ── Dark mode token overrides ─────────────────────────────────────────── */
+.dark {
+  --color-brand-deep:    #0d0118;
+  --color-brand-primary: #7c3aed;
+  --color-brand-medium:  #c084fc;
+  --color-brand-light:   #2e1065;
+  --color-brand-accent:  #f472b6;
+  --color-brand-yellow:  #fde047;
+  --color-paper:         #120824;
+  --color-surface:       #1e0f35;
+  --color-surface-2:     #2d1b4e;
+  --color-border-muted:  #3b1f6e;
+}
+
+body {
+  background-color: var(--color-paper);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  color: #f1e8ff;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-thumb { background: #a78bfa; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #c084fc; }
+
+/* ── Gradient blob animation ───────────────────────────────────────────── */
+@keyframes blob-pulse {
+  0%, 100% { transform: scale(1) translate(0, 0); opacity: var(--blob-opacity, 0.4); }
+  33%       { transform: scale(1.08) translate(2%, -2%); opacity: calc(var(--blob-opacity, 0.4) * 0.85); }
+  66%       { transform: scale(0.94) translate(-2%, 3%); opacity: calc(var(--blob-opacity, 0.4) * 1.1); }
+}
+
+.blob-animate {
+  animation: blob-pulse 8s ease-in-out infinite;
+}
+.blob-animate-delay-2 {
+  animation: blob-pulse 10s ease-in-out 2s infinite;
+}
+.blob-animate-delay-4 {
+  animation: blob-pulse 12s ease-in-out 4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob-animate, .blob-animate-delay-2, .blob-animate-delay-4 {
+    animation: none;
+  }
+}
 
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; }
@@ -77,3 +125,8 @@ body {
   animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ── Dark mode card/panel overrides ────────────────────────────────────── */
+.dark .dashboard-card {
+  background-color: var(--color-surface);
+  border-color: var(--color-border-muted);
+}
