@@ -4,10 +4,11 @@ import {
   ShieldCheck, ArrowLeft, RefreshCw, AlertOctagon, Clock, CheckCircle2,
   TrendingUp, MapPin, Users, Download, X, AlertTriangle, Zap
 } from 'lucide-react'
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet'
+import L from 'leaflet'
 import {
   PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
-  Tooltip, AreaChart, Area, CartesianGrid, Legend
+  Tooltip as RechartsTooltip, AreaChart, Area, CartesianGrid, Legend
 } from 'recharts'
 import { api } from '../api'
 import { ISSUE_TYPE_META, SEVERITY_META, STATUS_META, timeAgo } from '../constants'
@@ -56,6 +57,34 @@ function ToastContainer({ toasts }) {
 // ---------------------------------------------------------------------------
 function Skeleton({ className = '' }) {
   return <div className={`animate-pulse bg-slate-100 rounded-lg ${className}`} />
+}
+
+// Utility: aggregate points into latitude/longitude grid buckets
+function computeBuckets(points, cellDeg) {
+  const buckets = new Map()
+  for (const p of points) {
+    const lat = Number(p.latitude)
+    const lng = Number(p.longitude)
+    if (!isFinite(lat) || !isFinite(lng)) continue
+    const keyLat = Math.floor(lat / cellDeg)
+    const keyLng = Math.floor(lng / cellDeg)
+    const key = `${keyLat}:${keyLng}`
+    const v = buckets.get(key) || { count: 0, latSum: 0, lngSum: 0 }
+    v.count += 1
+    v.latSum += lat
+    v.lngSum += lng
+    buckets.set(key, v)
+  }
+  const out = []
+  for (const [k, v] of buckets.entries()) {
+    out.push({
+      key: k,
+      count: v.count,
+      lat: v.latSum / v.count,
+      lng: v.lngSum / v.count,
+    })
+  }
+  return out
 }
 
 // ---------------------------------------------------------------------------
@@ -291,6 +320,11 @@ function healthAccent(v) {
 // Map panel
 // ---------------------------------------------------------------------------
 function MapPanel({ issues, onSelect, loading }) {
+  const mapRef = useRef(null)
+  const [mapZoom, setMapZoom] = useState(5)
+
+  
+
   return (
     <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
       <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
@@ -306,39 +340,123 @@ function MapPanel({ issues, onSelect, loading }) {
             </div>
           </div>
         ) : (
-          <MapContainer center={INDIA_CENTER} zoom={5} style={{ height: '100%', width: '100%' }} attributionControl={false}>
-            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-            {issues.map(issue => {
-              const sev = SEVERITY_META[issue.severity_label] || SEVERITY_META.Low
-              return (
-                <CircleMarker
-                  key={issue.id}
-                  center={[issue.latitude, issue.longitude]}
-                  radius={issue.status === 'resolved' ? 5 : 7 + issue.severity_score / 20}
-                  pathOptions={{
-                    color: sev.color,
-                    fillColor: sev.color,
-                    fillOpacity: issue.status === 'resolved' ? 0.25 : 0.65,
-                    weight: issue.sla_breach ? 2.5 : 1.5,
-                  }}
-                  eventHandlers={{ click: () => onSelect(issue) }}
-                >
-                  <Popup>
-                    <div className="text-xs">
-                      <strong>{ISSUE_TYPE_META[issue.issue_type]?.label}</strong> · {issue.severity_label}
-                      <br />
-                      Priority: {issue.priority_score}
-                      {issue.sla_breach && <><br /><span style={{ color: '#dc2626' }}>⚠ SLA Breached</span></>}
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              )
-            })}
+          <MapContainer
+            center={INDIA_CENTER}
+            zoom={5}
+            whenCreated={(map) => { mapRef.current = map; setMapZoom(map.getZoom()) }}
+            style={{ height: '100%', width: '100%' }}
+            attributionControl={false}
+            preferCanvas={true}
+            zoomSnap={0.25}
+            zoomDelta={0.5}
+          >
+            <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
+            {/* Aggregation & performance: if many points or zoomed out, render aggregated buckets */}
+            {issues.length > 800 || mapZoom <= 6 ? (
+              <AggregatedMarkers issues={issues} mapZoom={mapZoom} onSelect={onSelect} />
+            ) : (
+              issues.map(issue => {
+                const sev = SEVERITY_META[issue.severity_label] || SEVERITY_META.Low
+                return (
+                  <CircleMarker
+                    key={issue.id}
+                    center={[issue.latitude, issue.longitude]}
+                    radius={issue.status === 'resolved' ? 5 : 7 + issue.severity_score / 20}
+                    pathOptions={{
+                      color: sev.color,
+                      fillColor: sev.color,
+                      fillOpacity: issue.status === 'resolved' ? 0.25 : 0.65,
+                      weight: issue.sla_breach ? 2.5 : 1.5,
+                    }}
+                    eventHandlers={{ click: () => onSelect(issue) }}
+                    renderer={L.canvas()}
+                  >
+                    <Popup>
+                      <div className="text-xs">
+                        <strong>{ISSUE_TYPE_META[issue.issue_type]?.label}</strong> · {issue.severity_label}
+                        <br />
+                        Priority: {issue.priority_score}
+                        {issue.sla_breach && <><br /><span style={{ color: '#dc2626' }}>⚠ SLA Breached</span></>}
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                )
+              })
+            )}
+            {/* keep map listeners for zoom updates */}
+            <MapEventListener setMapZoom={setMapZoom} mapRef={mapRef} />
           </MapContainer>
         )}
       </div>
     </div>
   )
+}
+
+function MapEventListener({ setMapZoom, mapRef }) {
+  // attach listeners once map is ready
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    const onZoom = () => setMapZoom(map.getZoom())
+    map.on('zoomend', onZoom)
+    map.on('moveend', onZoom)
+    return () => {
+      map.off('zoomend', onZoom)
+      map.off('moveend', onZoom)
+    }
+  }, [mapRef, setMapZoom])
+  return null
+}
+
+function AggregatedMarkers({ issues, mapZoom, onSelect }) {
+  // choose cell size based on zoom
+  const cellDeg = mapZoom <= 4 ? 4.0 : mapZoom <= 6 ? 2.0 : 0.5
+  const buckets = computeBucketsMemo(issues, cellDeg)
+
+  // color thresholds (simple): 1, 5, 20, 100
+  const getColor = (count) => {
+    if (count >= 100) return getCssVar('--brand-ink')
+    if (count >= 20) return getCssVar('--brand-accent')
+    if (count >= 5) return getCssVar('--accent-warm')
+    return '#9CA3AF'
+  }
+
+  return (
+    <>
+      {buckets.map(b => (
+        <CircleMarker
+          key={b.key}
+          center={[b.lat, b.lng]}
+          radius={6 + Math.sqrt(b.count) * 1.8}
+          pathOptions={{
+            color: getColor(b.count),
+            fillColor: getColor(b.count),
+            fillOpacity: 0.65,
+            weight: 0.8
+          }}
+          eventHandlers={{ click: () => onSelect({ aggregated: true, count: b.count, lat: b.lat, lng: b.lng }) }}
+          renderer={L.canvas()}
+        >
+          <Tooltip direction="top" offset={[0, -6]}>
+            <div className="text-xs">
+              <strong>{b.count} reports</strong>
+              <div className="text-slate-500">Click to zoom / inspect</div>
+            </div>
+          </Tooltip>
+        </CircleMarker>
+      ))}
+    </>
+  )
+}
+
+function computeBucketsMemo(points, cellDeg) {
+  // lightweight memo: JSON stringify size + cellDeg
+  return computeBuckets(points, cellDeg)
+}
+
+function getCssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name) || ''
 }
 
 // ---------------------------------------------------------------------------
@@ -383,7 +501,7 @@ function ChartsPanel({ stats, wardHealth, loading }) {
                   <Pie data={typeData} dataKey="value" nameKey="name" innerRadius={35} outerRadius={60} paddingAngle={2}>
                     {typeData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <RechartsTooltip contentStyle={tooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -413,7 +531,7 @@ function ChartsPanel({ stats, wardHealth, loading }) {
               >
                 <XAxis type="number" domain={[0, 100]} hide />
                 <YAxis dataKey="name" type="category" width={90} tick={{ fill: '#5d6b8a', fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={tooltipStyle} />
+                <RechartsTooltip contentStyle={tooltipStyle} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                   {wardHealth.map((w, i) => (
                     <Cell key={i} fill={w.health_index >= 70 ? '#14b890' : w.health_index >= 40 ? '#f4670e' : '#dc2626'} />
@@ -489,7 +607,7 @@ function ForecastPanel({ data, days, setDays, resolveN, setResolveN, loading }) 
               <CartesianGrid strokeDasharray="3 3" stroke="#2d3855" vertical={false} />
               <XAxis dataKey="day" tickFormatter={v => `Day ${v}`} stroke="#5d6b8a" tick={{ fill: '#5d6b8a' }} />
               <YAxis domain={[0, 100]} stroke="#5d6b8a" tick={{ fill: '#5d6b8a' }} />
-              <Tooltip
+              <RechartsTooltip
                 contentStyle={tooltipStyle}
                 labelFormatter={v => `Day ${v}`}
               />
