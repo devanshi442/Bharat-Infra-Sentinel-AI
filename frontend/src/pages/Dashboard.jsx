@@ -4,8 +4,9 @@ import {
   ShieldCheck, ArrowLeft, RefreshCw, AlertOctagon, Clock, CheckCircle2,
   TrendingUp, MapPin, Users, Download, X, AlertTriangle, Zap
 } from 'lucide-react'
-import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import {
   PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
   Tooltip as RechartsTooltip, AreaChart, Area, CartesianGrid, Legend
@@ -15,7 +16,7 @@ import { ISSUE_TYPE_META, SEVERITY_META, STATUS_META, timeAgo } from '../constan
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useTranslation } from 'react-i18next'
 
-const INDIA_CENTER = [20.5937, 78.9629]  // Geographic centre of India
+const INDIA_CENTER = [22.5, 80]  // Adjusted to better frame India
 
 // ---------------------------------------------------------------------------
 // Toast system
@@ -59,33 +60,7 @@ function Skeleton({ className = '' }) {
   return <div className={`animate-pulse bg-slate-100 rounded-lg ${className}`} />
 }
 
-// Utility: aggregate points into latitude/longitude grid buckets
-function computeBuckets(points, cellDeg) {
-  const buckets = new Map()
-  for (const p of points) {
-    const lat = Number(p.latitude)
-    const lng = Number(p.longitude)
-    if (!isFinite(lat) || !isFinite(lng)) continue
-    const keyLat = Math.floor(lat / cellDeg)
-    const keyLng = Math.floor(lng / cellDeg)
-    const key = `${keyLat}:${keyLng}`
-    const v = buckets.get(key) || { count: 0, latSum: 0, lngSum: 0 }
-    v.count += 1
-    v.latSum += lat
-    v.lngSum += lng
-    buckets.set(key, v)
-  }
-  const out = []
-  for (const [k, v] of buckets.entries()) {
-    out.push({
-      key: k,
-      count: v.count,
-      lat: v.latSum / v.count,
-      lng: v.lngSum / v.count,
-    })
-  }
-  return out
-}
+// Removed computeBuckets as we now use react-leaflet-cluster
 
 // ---------------------------------------------------------------------------
 // Main dashboard
@@ -217,6 +192,7 @@ export default function Dashboard() {
 // Top bar
 // ---------------------------------------------------------------------------
 function TopBar({ onRefresh, loading, slaBreaches, searchQuery, setSearchQuery }) {
+  const { t } = useTranslation()
   return (
     <header className="border-b border-slate-100 bg-slate-50/95 backdrop-blur sticky top-0 z-30">
       <div className="max-w-[1600px] mx-auto px-4 md:px-5 h-16 flex items-center justify-between gap-3">
@@ -241,7 +217,7 @@ function TopBar({ onRefresh, loading, slaBreaches, searchQuery, setSearchQuery }
         <div className="flex items-center gap-2 shrink-0">
           <input
             type="text"
-            placeholder="Search issues..."
+            placeholder={t('search_issues', 'Search issues...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -321,7 +297,57 @@ function healthAccent(v) {
 // ---------------------------------------------------------------------------
 function MapPanel({ issues, onSelect, loading }) {
   const mapRef = useRef(null)
-  const [mapZoom, setMapZoom] = useState(5)
+  
+  const createClusterCustomIcon = function (cluster) {
+    const count = cluster.getChildCount();
+    const markers = cluster.getAllChildMarkers();
+    
+    let counts = { reported: 0, in_progress: 0, resolved: 0 };
+    markers.forEach(m => {
+      const color = m.options.fillColor;
+      if (color === '#e11d48') counts.reported++;
+      else if (color === '#f59e0b') counts.in_progress++;
+      else if (color === '#059669') counts.resolved++;
+    });
+
+    let dominantStatus = 'reported';
+    let max = counts.reported;
+    if (counts.in_progress > max) { dominantStatus = 'in_progress'; max = counts.in_progress; }
+    if (counts.resolved > max) { dominantStatus = 'resolved'; max = counts.resolved; }
+
+    let bgColor = 'bg-slate-400';
+    if (dominantStatus === 'reported') bgColor = 'bg-rose-600';
+    if (dominantStatus === 'in_progress') bgColor = 'bg-amber-500';
+    if (dominantStatus === 'resolved') bgColor = 'bg-emerald-600';
+
+    // CSS conic gradient for a clean, non-noisy pie chart ring around the cluster
+    const pctR = (counts.reported / count) * 100;
+    const pctI = (counts.in_progress / count) * 100;
+    const pctRes = (counts.resolved / count) * 100;
+    
+    const gradient = `conic-gradient(
+      #e11d48 0% ${pctR}%,
+      #f59e0b ${pctR}% ${pctR + pctI}%,
+      #059669 ${pctR + pctI}% 100%
+    )`;
+
+    // Dynamic sizing
+    let size = 32;
+    if (count >= 100) size = 40;
+    if (count >= 1000) size = 48;
+
+    return L.divIcon({
+      html: `
+        <div class="rounded-full shadow-lg flex items-center justify-center relative" style="width: ${size}px; height: ${size}px; background: ${gradient};">
+          <div class="${bgColor} text-white rounded-full flex items-center justify-center font-bold" style="width: ${size - 6}px; height: ${size - 6}px; font-size: ${size > 40 ? '13px' : '11px'};">
+            ${count.toLocaleString()}
+          </div>
+        </div>
+      `,
+      className: 'custom-cluster-icon',
+      iconSize: L.point(size, size, true),
+    });
+  }
 
   
 
@@ -331,7 +357,23 @@ function MapPanel({ issues, onSelect, loading }) {
         <h2 className="font-display font-medium text-sm">Live Issue Map</h2>
         <span className="text-xs text-slate-500">{issues.length} reports</span>
       </div>
-      <div className="h-[380px] md:h-[420px]">
+      <div className="h-[380px] md:h-[420px] relative">
+        {/* Legend */}
+        <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur border border-slate-200 rounded-lg shadow-sm p-3 text-xs flex flex-col gap-2 pointer-events-auto">
+          <div className="font-semibold text-slate-700 mb-0.5">Issue Status</div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-rose-600 border border-rose-600"></div>
+            <span className="text-slate-600">Open (Reported)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-amber-500 border border-amber-500" style={{ borderStyle: 'dashed' }}></div>
+            <span className="text-slate-600">In Progress</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-emerald-600 border border-emerald-600" style={{ borderStyle: 'dotted' }}></div>
+            <span className="text-slate-600">Resolved</span>
+          </div>
+        </div>
         {loading && issues.length === 0 ? (
           <div className="h-full flex items-center justify-center bg-slate-50">
             <div className="text-center">
@@ -342,8 +384,8 @@ function MapPanel({ issues, onSelect, loading }) {
         ) : (
           <MapContainer
             center={INDIA_CENTER}
-            zoom={5}
-            whenCreated={(map) => { mapRef.current = map; setMapZoom(map.getZoom()) }}
+            zoom={4.5}
+            whenCreated={(map) => { mapRef.current = map; }}
             style={{ height: '100%', width: '100%' }}
             attributionControl={false}
             preferCanvas={true}
@@ -352,22 +394,27 @@ function MapPanel({ issues, onSelect, loading }) {
           >
             <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
 
-            {/* Aggregation & performance: if many points or zoomed out, render aggregated buckets */}
-            {issues.length > 800 || mapZoom <= 6 ? (
-              <AggregatedMarkers issues={issues} mapZoom={mapZoom} onSelect={onSelect} />
-            ) : (
-              issues.map(issue => {
-                const sev = SEVERITY_META[issue.severity_label] || SEVERITY_META.Low
+            <MarkerClusterGroup
+              chunkedLoading
+              iconCreateFunction={createClusterCustomIcon}
+              maxClusterRadius={60}
+              spiderfyOnMaxZoom={true}
+              showCoverageOnHover={false}
+            >
+              {issues.map(issue => {
+                const statusColor = issue.status === 'reported' ? '#e11d48' : issue.status === 'in_progress' ? '#f59e0b' : '#059669'
+                const dashArray = issue.status === 'reported' ? '' : issue.status === 'in_progress' ? '5,5' : '2,4'
                 return (
                   <CircleMarker
                     key={issue.id}
                     center={[issue.latitude, issue.longitude]}
                     radius={issue.status === 'resolved' ? 5 : 7 + issue.severity_score / 20}
                     pathOptions={{
-                      color: sev.color,
-                      fillColor: sev.color,
-                      fillOpacity: issue.status === 'resolved' ? 0.25 : 0.65,
-                      weight: issue.sla_breach ? 2.5 : 1.5,
+                      color: statusColor,
+                      fillColor: statusColor,
+                      fillOpacity: issue.status === 'resolved' ? 0.3 : 0.7,
+                      weight: issue.sla_breach ? 3 : 1.5,
+                      dashArray: dashArray
                     }}
                     eventHandlers={{ click: () => onSelect(issue) }}
                     renderer={L.canvas()}
@@ -382,10 +429,8 @@ function MapPanel({ issues, onSelect, loading }) {
                     </Popup>
                   </CircleMarker>
                 )
-              })
-            )}
-            {/* keep map listeners for zoom updates */}
-            <MapEventListener setMapZoom={setMapZoom} mapRef={mapRef} />
+              })}
+            </MarkerClusterGroup>
           </MapContainer>
         )}
       </div>
@@ -393,67 +438,7 @@ function MapPanel({ issues, onSelect, loading }) {
   )
 }
 
-function MapEventListener({ setMapZoom, mapRef }) {
-  // attach listeners once map is ready
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
-    const onZoom = () => setMapZoom(map.getZoom())
-    map.on('zoomend', onZoom)
-    map.on('moveend', onZoom)
-    return () => {
-      map.off('zoomend', onZoom)
-      map.off('moveend', onZoom)
-    }
-  }, [mapRef, setMapZoom])
-  return null
-}
-
-function AggregatedMarkers({ issues, mapZoom, onSelect }) {
-  // choose cell size based on zoom
-  const cellDeg = mapZoom <= 4 ? 4.0 : mapZoom <= 6 ? 2.0 : 0.5
-  const buckets = computeBucketsMemo(issues, cellDeg)
-
-  // color thresholds (simple): 1, 5, 20, 100
-  const getColor = (count) => {
-    if (count >= 100) return getCssVar('--brand-ink')
-    if (count >= 20) return getCssVar('--brand-accent')
-    if (count >= 5) return getCssVar('--accent-warm')
-    return '#9CA3AF'
-  }
-
-  return (
-    <>
-      {buckets.map(b => (
-        <CircleMarker
-          key={b.key}
-          center={[b.lat, b.lng]}
-          radius={6 + Math.sqrt(b.count) * 1.8}
-          pathOptions={{
-            color: getColor(b.count),
-            fillColor: getColor(b.count),
-            fillOpacity: 0.65,
-            weight: 0.8
-          }}
-          eventHandlers={{ click: () => onSelect({ aggregated: true, count: b.count, lat: b.lat, lng: b.lng }) }}
-          renderer={L.canvas()}
-        >
-          <Tooltip direction="top" offset={[0, -6]}>
-            <div className="text-xs">
-              <strong>{b.count} reports</strong>
-              <div className="text-slate-500">Click to zoom / inspect</div>
-            </div>
-          </Tooltip>
-        </CircleMarker>
-      ))}
-    </>
-  )
-}
-
-function computeBucketsMemo(points, cellDeg) {
-  // lightweight memo: JSON stringify size + cellDeg
-  return computeBuckets(points, cellDeg)
-}
+// Map event listener, AggregatedMarkers, and computeBucketsMemo removed
 
 function getCssVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name) || ''
@@ -672,12 +657,13 @@ function ContractorsPanel({ contractors, loading }) {
 // Priority queue
 // ---------------------------------------------------------------------------
 function PriorityQueue({ issues, filterStatus, onFilterChange, onSelect, onStatusChange, loading, slaBreaches }) {
+  const { t } = useTranslation()
   return (
     <div className="bg-white border border-slate-100 rounded-xl flex flex-col max-h-[600px] lg:max-h-[calc(100vh-104px)] lg:sticky lg:top-[84px]">
       <div className="px-5 py-3.5 border-b border-slate-100 flex justify-between items-start gap-2">
         <div className="min-w-0">
           <h2 className="font-display font-medium text-sm mb-3">
-            Priority Queue
+            {t('priority_queue', 'Priority Queue')}
             {slaBreaches > 0 && (
               <span className="ml-2 text-[10px] font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-full px-1.5 py-0.5">
                 {slaBreaches} breached

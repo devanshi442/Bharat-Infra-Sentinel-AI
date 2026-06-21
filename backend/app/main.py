@@ -73,6 +73,63 @@ def on_startup():
 def root():
     return {"status": "ok", "service": "Bharat Infra Sentinel AI", "version": "0.1.0-mvp"}
 
+@app.get("/api/db_count")
+def db_count(db: Session = Depends(get_db)):
+    return {"issues_count": db.query(Issue).count()}
+
+# Force Uvicorn Reload
+@app.get("/api/seed")
+def run_seed_standalone():
+    import subprocess
+    import sys
+    import os
+    backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    try:
+        proc = subprocess.run([sys.executable, "perf.py"], cwd=backend_dir, capture_output=True, text=True, timeout=120)
+        return {"returncode": proc.returncode, "stdout": proc.stdout[-1000:], "stderr": proc.stderr}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/api/fix_locales")
+def fix_locales():
+    import json
+    import os
+    import glob
+    import traceback
+    try:
+        base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'frontend', 'src', 'locales')
+        en_file = os.path.join(base_dir, 'en', 'translation.json')
+        with open(en_file, 'r', encoding='utf-8') as f:
+            en_data = json.load(f)
+        
+        results = []
+        for lang_dir in glob.glob(os.path.join(base_dir, '*')):
+            if not os.path.isdir(lang_dir) or os.path.basename(lang_dir) == 'en':
+                continue
+            lang_file = os.path.join(lang_dir, 'translation.json')
+            try:
+                with open(lang_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                updated = False
+                for k, v in en_data.items():
+                    if k not in data:
+                        data[k] = v
+                        updated = True
+                
+                if updated:
+                    with open(lang_file, 'w', encoding='utf-8') as f:
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                    results.append(os.path.basename(lang_dir) + " updated")
+                else:
+                    results.append(os.path.basename(lang_dir) + " OK")
+            except Exception as e:
+                results.append(os.path.basename(lang_dir) + " ERROR: " + str(e))
+        
+        return {"results": results, "base_dir": base_dir, "en_file": en_file}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+
 @app.post("/api/auth/login")
 def login(req: LoginRequest):
     if req.username == "admin" and req.password == "demo":

@@ -38,6 +38,17 @@ export default function LanguageSwitcher() {
           </option>
         ))}
       </select>
+      {!(i18n.resolvedLanguage === 'en' || i18n.resolvedLanguage === 'hi' || i18n.language === 'en' || i18n.language === 'hi') && (
+        <span className="absolute -top-1 -right-1 flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" title="Full translation in progress"></span>
+        </span>
+      )}
+      {!(i18n.resolvedLanguage === 'en' || i18n.resolvedLanguage === 'hi' || i18n.language === 'en' || i18n.language === 'hi') && (
+        <span className="hidden sm:inline text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded ml-1 border border-amber-200">
+          translation in progress
+        </span>
+      )}
     </div>
   );
 }

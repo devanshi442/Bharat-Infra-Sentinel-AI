@@ -26,15 +26,5 @@ def run_perf():
     t1 = time.time()
     print(f"Load ALL {count} issues (Priority Queue full load) Time: {(t1 - t0)*1000:.2f} ms")
 
-    t0 = time.time()
-    # Stats row
-    total = len(issues)
-    resolved = sum(1 for i in issues if i.status == "resolved")
-    in_progress = sum(1 for i in issues if i.status == "in_progress")
-    pending = sum(1 for i in issues if i.status == "reported")
-    critical = sum(1 for i in issues if i.severity_label == "Critical")
-    t1 = time.time()
-    print(f"Stats calculation time in-memory: {(t1 - t0)*1000:.2f} ms")
-
 if __name__ == "__main__":
     run_perf()

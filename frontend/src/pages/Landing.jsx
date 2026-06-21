@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Camera, Brain, MapPinned, ShieldCheck } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function Landing() {
+  const { t } = useTranslation()
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 overflow-hidden relative">
       {/* Ambient grid backdrop — evokes GIS/satellite mapping without being literal */}
@@ -20,7 +22,7 @@ export default function Landing() {
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="w-6 h-6 text-sentinel-400" strokeWidth={2.2} />
           <span className="font-display font-semibold text-lg tracking-tight">
-            Bharat Infra Sentinel <span className="text-sentinel-400">AI</span>
+            {t('app_title', 'Bharat Infra Sentinel')} <span className="text-sentinel-400">AI</span>
           </span>
         </div>
         <span className="hidden md:inline-block text-xs font-mono text-slate-500 tracking-wider uppercase border border-slate-200 rounded-full px-3 py-1.5">
@@ -32,21 +34,19 @@ export default function Landing() {
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 text-[13px] font-mono uppercase tracking-wider text-signal-400 border border-signal-500/30 bg-signal-500/10 rounded-full px-3 py-1 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-signal-400 animate-pulse" />
-            Predictive Civic Governance
+            {t('predictive_civic_governance', 'Predictive Civic Governance')}
           </div>
 
           <h1 className="font-display font-semibold text-5xl md:text-7xl leading-[1.02] tracking-tight mb-6">
-            Cities decay
+            {t('hero_title_1', 'Cities decay')}
             <br />
-            <span className="text-slate-500">in ways the eye</span>
+            <span className="text-slate-500">{t('hero_title_2', 'in ways the eye')}</span>
             <br />
-            can't see yet.
+            {t('hero_title_3', "can't see yet.")}
           </h1>
 
           <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-xl mb-10 font-light">
-            Bharat Infra Sentinel AI turns citizen photos into predictions —
-            telling municipalities which road, drain, or streetlight fails
-            next, before it does.
+            {t('hero_subtitle', 'Bharat Infra Sentinel AI turns citizen photos into predictions — telling municipalities which road, drain, or streetlight fails next, before it does.')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -55,7 +55,7 @@ export default function Landing() {
               className="group inline-flex items-center justify-center gap-2 bg-signal-500 hover:bg-signal-600 text-white font-medium px-6 py-3.5 rounded-lg transition-colors"
             >
               <Camera className="w-4 h-4" />
-              Report an Issue
+              {t('report_issue', 'Report an Issue')}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
@@ -63,7 +63,7 @@ export default function Landing() {
               className="inline-flex items-center justify-center gap-2 border border-slate-200 hover:border-slate-500 hover:bg-white text-slate-900 font-medium px-6 py-3.5 rounded-lg transition-colors"
             >
               <MapPinned className="w-4 h-4" />
-              Open Government Dashboard
+              {t('open_dashboard', 'Open Government Dashboard')}
             </Link>
           </div>
         </div>
@@ -71,10 +71,10 @@ export default function Landing() {
         {/* Process strip — order carries real meaning here (a pipeline), so numbering is justified */}
         <div className="mt-24 md:mt-32 grid grid-cols-1 md:grid-cols-4 gap-px bg-slate-100 rounded-2xl overflow-hidden border border-slate-100">
           {[
-            { n: '01', icon: Camera, title: 'Capture', desc: 'Citizen photographs the issue — pothole, leak, garbage, dark streetlight.' },
-            { n: '02', icon: Brain, title: 'Detect', desc: 'Computer vision classifies the issue type and scores its severity.' },
-            { n: '03', icon: ShieldCheck, title: 'Predict', desc: 'Risk engine forecasts the probability of escalation within 30 days.' },
-            { n: '04', icon: MapPinned, title: 'Route', desc: 'Issue is mapped, prioritized, and dispatched to the right department.' },
+            { n: '01', icon: Camera, title: t('step1_title', 'Capture'), desc: t('step1_desc', 'Citizen photographs the issue — pothole, leak, garbage, dark streetlight.') },
+            { n: '02', icon: Brain, title: t('step2_title', 'Detect'), desc: t('step2_desc', 'Computer vision classifies the issue type and scores its severity.') },
+            { n: '03', icon: ShieldCheck, title: t('step3_title', 'Predict'), desc: t('step3_desc', 'Risk engine forecasts the probability of escalation within 30 days.') },
+            { n: '04', icon: MapPinned, title: t('step4_title', 'Route'), desc: t('step4_desc', 'Issue is mapped, prioritized, and dispatched to the right department.') },
           ].map((step) => (
             <div key={step.n} className="bg-slate-50 p-6 md:p-7">
               <div className="flex items-center justify-between mb-5">
